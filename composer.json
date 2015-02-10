@@ -1,0 +1,27 @@
+{
+    "name": "cupoftea/youtube",
+    "description": "Laravel YouTube Data API v3 library",
+    "keywords": ["youtube", "laravel", "oauth"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sven Wittevrongel",
+            "email": "wittevrongel.sven@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "laravel/socialite": "~2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CupOfTea\\YouTube\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
+    "minimum-stability": "dev"
+}
