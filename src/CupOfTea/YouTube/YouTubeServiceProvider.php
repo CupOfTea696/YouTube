@@ -1,0 +1,57 @@
+<?php namespace CupOfTea\YouTube;
+
+use Illuminate\Support\ServiceProvider;
+
+class YouTubeServiceProvider extends ServiceProvider {
+
+	/**
+	 * Indicates if loading of the provider is deferred.
+	 *
+	 * @var bool
+	 */
+	protected $defer = true;
+
+	/**
+	 * Register the service provider.
+	 *
+	 * @return void
+	 */
+	public function register()
+	{
+        $config = $this->app['config']['services.google'];
+        $ytConfig = array_add($this->app['config']['youtube'], 'auth_model', $this->app['config']['auth.model']);
+        
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/youtube.php', 'youtube'
+        );
+        
+		$this->app->bindShared('CupOfTea\YouTube\Contracts\Factory', function($app)
+		{
+			return new API\Provider(
+                $this->app['request'], $config['client_id'],
+                $config['client_secret'], $ytConfig;
+            );
+		});
+	}
+
+	/**
+	 * Get the services provided by the provider.
+	 *
+	 * @return array
+	 */
+	public function provides()
+	{
+		return ['CupOfTea\YouTube\Contracts\Factory'];
+	}
+    
+    public function boot(){
+        $this->publishes([
+            __DIR__.'/../../config/youtube.php' => base_path('youtube.php'),
+        ], 'config');
+        
+        $this->publishes([
+            __DIR__.'/../../database/migrations/' => base_path('/database/migrations')
+        ], 'migrations');
+    }
+
+}

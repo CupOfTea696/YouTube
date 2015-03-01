@@ -1,0 +1,107 @@
+{
+    'self()': {
+        'aliases': {
+            'me': 'user',
+            'channel': 'channels.list.mine',
+            'icon': 'channels.list.mine.icon($size)'
+        },
+    },
+    
+    // the user will be prompted to grant account access to your application each time she tries to complete a particular action
+    'prompt()',
+    
+    // resources
+    'activities()': {
+        'methods': ['list', 'insert'],
+    },
+    'channels()': {
+        'self()': {
+            'methods': ['list', 'update'],
+            'aliases': {
+                'me': 'list.mine',
+                'icon': 'list.mine.icon'
+            }
+        },
+        'banners()': {
+            'methods': ['insert'],
+        },
+        'sections()': {
+            'methods': ['list', 'insert', 'update', 'delete'],
+        },
+    },
+    'guideCategories()': {
+        'methods': ['list'],
+    },
+    'i18n': {
+        'languages': {
+            'methods': ['list'],
+        },
+        'regions': {
+            'methods': ['list'],
+        },
+    },
+    'playlists()': {
+        'self()': {
+            'methods': ['list', 'insert', 'update', 'delete'],
+        },
+        'items()': {
+            'methods': ['list', 'insert', 'update', 'delete'],
+        }
+    },
+    'search()': {
+        'methods': ['list'],
+    },
+    'subscriptions()': {
+        'methods': ['list', 'insert', 'delete'],
+    },
+    'thumbnails()': {
+        'methods': ['set'],
+    },
+    'user': {
+        // different API tho.
+    },
+    'videos()': {
+        'self()': {
+            'methods': ['list', 'insert', 'update', 'rate', 'getRating', 'delete'],
+        },
+        'categories()': {
+            'methods': ['list'],
+        },
+    },
+    'watermarks()': {
+        'methods': ['set', 'unset'],
+    },
+    
+    
+    'request': {
+        'globalParams': ['fields', 'prettyPrint', 'quotaUser', 'userIp'],
+        'params': [],
+        'methods': [],
+    },
+    'method': {
+        'list': [
+            'auth': false,
+        ],
+        'insert': [
+            'auth': true,
+        ],
+        'update': [
+            'auth': true,
+        ],
+        'rate': [
+            'auth': true,
+        ],
+        'getRating': [
+            'auth': false,
+        ],
+        'delete': [
+            'auth': true,
+        ],
+        'set': [
+            'auth': true,
+        ],
+        'unset': [
+            'auth': true,
+        ],
+    },
+}

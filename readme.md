@@ -1,13 +1,13 @@
-# Laravel Socialite
+# Laravel YouTube Data API v3 library
 
 ## Introduction
 
-Laravel Socialite provides an expressive, fluent interface to OAuth authentication with Facebook, Twitter, Google, and GitHub. It handles almost all of the boilerplate subscription billing code you are dreading writing.
+Untested alpha. Please don't use this package yet unless you intend to contribute.
 
 ## Official Documentation
 
-Documentation for Socialite can be found on the [Laravel website](http://laravel.com/docs/authentication#social-authentication).
+Coming soon.
 
 ### License
 
-Laravel Socialite is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+Laravel YouTube Data API v3 library is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
