@@ -131,7 +131,7 @@ return [
         'surname' => 'name.familyName',
         'email' => 'emails.0.value',
         'avatar' => 'snippet.thumbnails.medium.url', // Automatically falls back to Default if Medium is not set.
-    ]
+    ],
     
 	/*
 	|--------------------------------------------------------------------------
