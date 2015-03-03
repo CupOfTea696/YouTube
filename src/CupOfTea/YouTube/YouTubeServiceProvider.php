@@ -10,6 +10,21 @@ class YouTubeServiceProvider extends ServiceProvider {
 	 * @var bool
 	 */
 	protected $defer = true;
+    
+    /**
+     * Bootstrap the application events.
+     *
+     * @return void
+     */
+    public function boot(){
+        $this->publishes([
+            __DIR__.'/../../config/youtube.php' => config_path('youtube.php'),
+        ], 'config');
+        
+        $this->publishes([
+            __DIR__.'/../../database/migrations/' => base_path('/database/migrations')
+        ], 'migrations');
+    }
 
 	/**
 	 * Register the service provider.
@@ -43,15 +58,5 @@ class YouTubeServiceProvider extends ServiceProvider {
 	{
 		return ['CupOfTea\YouTube\Contracts\Factory'];
 	}
-    
-    public function boot(){
-        $this->publishes([
-            __DIR__.'/../../config/youtube.php' => base_path('youtube.php'),
-        ], 'config');
-        
-        $this->publishes([
-            __DIR__.'/../../database/migrations/' => base_path('/database/migrations')
-        ], 'migrations');
-    }
 
 }
