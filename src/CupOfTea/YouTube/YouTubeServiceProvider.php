@@ -44,7 +44,7 @@ class YouTubeServiceProvider extends ServiceProvider {
 		{
 			return new API\Provider(
                 $this->app['request'], $config['client_id'],
-                $config['client_secret'], $ytConfig;
+                $config['client_secret'], $ytConfig,
             );
 		});
 	}
