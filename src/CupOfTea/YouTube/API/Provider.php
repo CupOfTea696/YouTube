@@ -166,7 +166,7 @@ class YouTubeProvider implements ProviderContract {
         $userData = [];
         foreach($this->cfg['map'] as $key => $prop){
             if(!$this->cfg['integration.enabled'] || ($this->cfg['integration.youtube_id_as_primary_key'] && $prop != 'id'))
-                $userData[$key] => array_dot($user)[$prop];
+                $userData[$key] = array_dot($user)[$prop];
         }
         
         if($this->cfg['integration.enabled'])
