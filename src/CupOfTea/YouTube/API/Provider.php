@@ -6,7 +6,7 @@ use CupOfTea\YouTube\Models\RefreshToken;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use CupOfTea\YouTube\Contracts\Provider as ProviderContract;
 
-class YouTubeProvider implements ProviderContract {
+class Provider implements ProviderContract {
 
 	/**
 	 * Available Resources for this API.
@@ -258,12 +258,17 @@ class YouTubeProvider implements ProviderContract {
             return $this;
         
         $response = $this->getHttpClient()->get('https://accounts.google.com/o/oauth2/revoke', [
-			'query' => ['token' => $token ? $token : $this->hasValidToken() ? $this->tokens['access_token'] : array_get($this->tokens, 'refresh_token'))],
+			'query' => ['token' => $token ? $token : $this->hasValidToken() ? $this->tokens['access_token'] : array_get($this->tokens, 'refresh_token')],
 		]);
         
         return $this;
     }
     
+    /**
+	 * Refresh the auth token. [handle this automatically? DB('Tokens', ['tokenId', 'token', 'key', 'userId']) key to encrypt session auth_token, use global key was well. re_token encrypted with global key]
+	 *
+	 * @return CupOfTea\YouTube\Contracts\Provider
+	 */
     protected function refresh(){
         if(array_get($this->tokens, 'refresh_token'))
             return $this->getTokensByRefresh();
@@ -306,7 +311,7 @@ class YouTubeProvider implements ProviderContract {
 	 */
 	public function user()
 	{
-		if(!array_get($this->tokens), 'access_token')
+		if(!array_get($this->tokens, 'access_token'))
             $this->login();
         
         $user = [];
@@ -444,7 +449,7 @@ class YouTubeProvider implements ProviderContract {
 	protected function getHttpClient($base_url = false){
         $base_url = $base_url ? $base_url : $this->base_url;
         
-        return new \GuzzleHttp\Client('base_url' => $this->base_url);
+        return new \GuzzleHttp\Client(['base_url' => $this->base_url]);
 	}
 
 	/**
@@ -467,7 +472,7 @@ class YouTubeProvider implements ProviderContract {
 	 * @param  string  $resource
 	 * @return CupOfTea\YouTube\Contracts\Resource
 	 */
-    public __call($resource, $a){
+    public function __call($resource, $a){
         $resource = strtolower($resource);
         if(!array_get($resource, $this->available_resources))
             throw new ResourceNotFoundException(ucfirst($resource));
@@ -476,7 +481,7 @@ class YouTubeProvider implements ProviderContract {
             return $instance;
         
         $instance = 'Resource\\' . ucfirst($resource);
-        return $this->resources[$resource] = new $instance(&$this);
+        return $this->resources[$resource] = new $instance($this);
     }
     
     /*************************/
@@ -490,7 +495,7 @@ class YouTubeProvider implements ProviderContract {
      *
      * @alias this.user
      */
-    public me(){
+    public function me(){
         return $this->user();
     }
     
@@ -499,7 +504,7 @@ class YouTubeProvider implements ProviderContract {
      *
      * @alias this.channels.me
      */
-    public channel($params){
+    public function channel($params){
         return $this->channels()->mine($params);
     }
     
@@ -508,7 +513,7 @@ class YouTubeProvider implements ProviderContract {
      *
      * @alias this.channels.my.avatar
      */
-    public avatar($size, $fallback = true){
+    public function avatar($size, $fallback = true){
         return $this->channels()->my()->avatar($size, $fallback);
     }
     

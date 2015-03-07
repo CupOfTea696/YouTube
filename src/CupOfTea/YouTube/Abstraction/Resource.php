@@ -55,7 +55,7 @@ abstract class Resource implements ArrayAccess, ResourceContract {
 	 * @param  Provider    $Provider
 	 * @return void
 	 */
-    public function __contruct(Provider $Provider){
+    public function __contruct(Provider &$Provider){
         $this->Provider = $Provider;
     }
     

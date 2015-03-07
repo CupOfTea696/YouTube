@@ -33,15 +33,15 @@ class YouTubeServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-        $config = $this->app['config']['services.google'];
-        $ytConfig = array_add($this->app['config']['youtube'], 'auth_model', $this->app['config']['auth.model']);
-        
         $this->mergeConfigFrom(
             __DIR__.'/../../config/youtube.php', 'youtube'
         );
         
 		$this->app->bindShared('CupOfTea\YouTube\Contracts\Factory', function($app)
 		{
+            $config = $this->app['config']['services.google'];
+            $ytConfig = array_dot(array_add($this->app['config']['youtube'], 'auth_model', $this->app['config']['auth.model']));
+            
 			return new API\Provider(
                 $this->app['request'], $config['client_id'],
                 $config['client_secret'], $ytConfig
