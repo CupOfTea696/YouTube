@@ -24,5 +24,11 @@ class Channels extends Resource{
 	 */
     protected $urlSegment = 'channels';
     
+    public function me(){
+        $this->authenticated();
+        
+        return $this->list(['mine' => 'true']);
+    }
+    
     
 }

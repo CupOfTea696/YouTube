@@ -14,11 +14,25 @@ abstract class Resource {
 	protected $Provider;
 
 	/**
+	 * The Session instance.
+	 *
+	 * @var Session
+	 */
+    protected $session;
+
+	/**
 	 * This package's configuration
 	 *
 	 * @var string
 	 */
 	protected $cfg;
+
+	/**
+	 * The access and refresh tokens
+	 *
+	 * @var array
+	 */
+	protected $tokens;
 
 	/**
 	 * API key for this API
@@ -54,6 +68,13 @@ abstract class Resource {
 	 * @var array
 	 */
     protected $parameters = ['prettyPrint' => 'false'];
+
+	/**
+	 * Whether or not this is an authorised request.
+	 *
+	 * @var bool
+	 */
+	protected $authorised = false;
     
 	/**
      * Metadata on all existing methods in this API
@@ -68,9 +89,12 @@ abstract class Resource {
 	 * @param  Provider    $Provider
 	 * @return void
 	 */
-    public function __construct(Provider &$Provider, $cfg){
+    public function __construct(Provider &$Provider, $session, $cfg){
         $this->Provider = $Provider;
+        
         $this->cfg = $cfg;
+        $this->session = $session;
+        $this->tokens = $this->session->get('cupoftea.youtube.tokens', []);
     }
     
     protected function getHttpClient(){
@@ -78,7 +102,7 @@ abstract class Resource {
     }
     
     public function authenticated(){
-        // @TODO: implement --> use auth token instead of api key
+        $this->authorised = true;
         
         return $this;
     }
@@ -98,7 +122,8 @@ abstract class Resource {
     
     protected function getAllParameters($parameters){
         $params = array_replace($this->parameters, $parameters);
-        $params['key'] = $this->cfg['api_key'];
+        if(!$this->authorised)
+            $params['key'] = $this->cfg['api_key'];
         
         return $params;
     }
@@ -136,11 +161,12 @@ abstract class Resource {
 	 * @throws CupOfTea\YouTube\Exceptions\UnauthorisedException
 	 */
     protected function authCheck($method){
-        if(in_array($method, $this->authMethods)){
+        if(in_array($method, $this->authMethods) || $this->authorised){
             if(!$this->Provider->isAuthenticated())
                 throw new UnauthorisedException;
             
             $this->Provider->authenticatedMethodCalled();
+            $this->authorised = true;
         }
     }
     

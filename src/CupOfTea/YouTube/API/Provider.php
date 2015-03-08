@@ -147,7 +147,6 @@ class Provider implements ProviderContract {
                 'fields' => $this->cfg['fields.google'],
 			],
 			'headers' => [
-				'Accept' => 'application/json',
 				'Authorization' => 'Bearer ' . $token,
 			],
 		]);
@@ -240,6 +239,17 @@ class Provider implements ProviderContract {
     }
     
     /**
+	 * Manually login by a user.
+	 *
+	 * @return CupOfTea\YouTube\Contracts\Provider
+	 */
+    public function loginByUser($user){
+        $this->getRefreshTokenByUser($user);
+        
+        return $this;
+    }
+    
+    /**
 	 * Prompt the user to grant account access to your application each time they try to complete a particular action.
 	 *
 	 * @return CupOfTea\YouTube\Contracts\Provider
@@ -250,10 +260,6 @@ class Provider implements ProviderContract {
     }
     
     public function isAuthenticated(){
-        return array_key_exists('access_token', $this->tokens);
-    }
-    
-    public function tokenAvailable(){
         return array_key_exists('access_token', $this->tokens) || array_key_exists('refresh_token', $this->tokens);
     }
     
@@ -464,8 +470,9 @@ class Provider implements ProviderContract {
             'base_url' => $base_url,
             'defaults' => [
                 'headers' => [
-                    'User-Agent' => $defaultAgent,
+                    'Accept' => 'application/json',
                     'Accept-Encoding' => 'gzip',
+                    'User-Agent' => $defaultAgent,
                 ],
             ],
         ]);
@@ -500,7 +507,7 @@ class Provider implements ProviderContract {
             return $instance;
         
         $instance = __NAMESPACE__ . '\\Resource\\' . ucfirst($resource);
-        return $this->resources[$resource] = new $instance($this, $this->cfg);
+        return $this->resources[$resource] = new $instance($this, $this->session, $this->cfg);
     }
     
     /*************************/
