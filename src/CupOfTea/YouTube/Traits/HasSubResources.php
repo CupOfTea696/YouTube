@@ -39,8 +39,10 @@ trait HasSubResources {
         
         $method = $resource_method;
         $this->beforeMethod($method);
+        $parameters = &$args[0];
         
-        array_unshift($args, $this->getHttpClient(), $this->urlSegment);
+        $parameters = $this->getAllParameters($parameters);
+        array_unshift($args, $this->getHttpClient(), $this->urlSegment, $this->authorised ? $this->tokens['access_token'] : '');
         return call_user_func_array([$this, '_' . $method], $args);
     }
 

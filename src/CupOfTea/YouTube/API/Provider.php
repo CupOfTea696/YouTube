@@ -4,6 +4,7 @@ use Auth;
 use Illuminate\Http\Request;
 use CupOfTea\YouTube\Models\RefreshToken;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use CupOfTea\YouTube\Exceptions\InvalidStateException;
 use CupOfTea\YouTube\Exceptions\ResourceNotFoundException;
 use CupOfTea\YouTube\Contracts\Provider as ProviderContract;
 
@@ -106,7 +107,7 @@ class Provider implements ProviderContract {
 		$this->clientSecret = $clientSecret;
         
         $this->cfg = $cfg;
-        $this->tokens = $this->session->get('cupoftea.youtube.tokens', []);
+        $this->tokens = $this->session->get($this->package('dot') . '.tokens', []);
         
         if($this->cfg['integration.enabled'] && !$this->tokens && Auth::check())
             $this->getRefreshTokenByUser(Auth::user());
@@ -219,7 +220,7 @@ class Provider implements ProviderContract {
 	public function redirect()
 	{
 		$this->session->set(
-			'cupoftea.youtube.state', $state = sha1(time().$this->session->get('_token'))
+			$this->package('dot') . '.state', $state = sha1(time().$this->session->get('_token'))
 		);
 
 		return new RedirectResponse($this->getAuthUrl($state));
@@ -232,7 +233,7 @@ class Provider implements ProviderContract {
 	 */
     public function login(){
         if($code = $this->getCode())
-            return $this->getTokens($code);
+            return $this->getTokensByCode($code);
         
         if(!$this->hasValidToken())
             return $this->refresh();
@@ -342,7 +343,7 @@ class Provider implements ProviderContract {
 	 */
 	protected function hasInvalidState()
 	{
-		return ! ($this->request->input('state') === $this->session->get('state'));
+		return ! ($this->request->input('state') === $this->session->get($this->package('dot') . '.state'));
 	}
 
 	/**
@@ -360,7 +361,7 @@ class Provider implements ProviderContract {
 			'body' => $this->getTokenFields($code),
 		]);
         $this->tokens = $this->parseTokens($response->getBody());
-        $this->session->set('cupoftea.youtube.tokens', $this->tokens);
+        $this->session->set($this->package('dot') . '.tokens', $this->tokens);
         
         return $this;
 	}
@@ -392,7 +393,7 @@ class Provider implements ProviderContract {
 			'body' => $this->getRefreshFields(),
 		]);
         $this->tokens = $this->parseTokens($response->getBody());
-        $this->session->set('cupoftea.youtube.tokens', $this->tokens);
+        $this->session->set($this->package('dot') . '.tokens', $this->tokens);
         
         return $this;
 	}
@@ -459,7 +460,7 @@ class Provider implements ProviderContract {
 	public function getHttpClient($base_url = false){
         $base_url = $base_url ? $base_url : $this->base_url;
         
-        $defaultAgent = self::PACKAGE . '/' . self::VERSION;
+        $defaultAgent = $this->package('v');
         $defaultAgent .= ' Guzzle/' . \GuzzleHttp\ClientInterface::VERSION;
         if(extension_loaded('curl'))
             $defaultAgent .= ' curl/' . curl_version()['version'];
@@ -510,11 +511,10 @@ class Provider implements ProviderContract {
         return $this->resources[$resource] = new $instance($this, $this->session, $this->cfg);
     }
     
-    /*************************/
-    /**                     **/
-    /**       Aliases       **/
-    /**                     **/
-    /*************************/
+    /**
+     * Aliases
+     *
+     */
     
     /**
      * Me
@@ -541,6 +541,35 @@ class Provider implements ProviderContract {
      */
     public function avatar($size, $fallback = true){
         return $this->channels()->my()->avatar($size, $fallback);
+    }
+    
+    /**
+     * Package Info
+     *
+     */
+    
+    /**
+     * Package Info
+     *
+     * @return string
+     */
+    public function package($info = false){
+        if($info == 'dot')
+            return strtolower(str_replace('/', '.', self::PACKAGE));
+        
+        if($info == 'v')
+            return self::PACKAGE . '/' . self::VERSION;
+        
+        return self::PACKAGE;
+    }
+    
+    /**
+     * Package Version
+     *
+     * @return string
+     */
+    public function version(){
+        return self::VERSION;
     }
     
 }
