@@ -196,7 +196,7 @@ class Provider implements ProviderContract {
         if($this->cfg['integration.auto_update'] && $user->isDirty())
             $user->save();
         
-        if(!$this->cfg['integration.auto_update'] && $user->exists){
+        if($user->exists){
             $this->saveRefreshToken($user);
         }else{
             $user->observe(new AuthModelObserver($this));
@@ -333,7 +333,12 @@ class Provider implements ProviderContract {
         if($this->cfg['fields.youtube'])
             $user = array_replace_recursive($user, $this->channel($this->cfg['fields.youtube']));
         
-		return $this->mapUser($user);
+		$user = $this->mapUser($user);
+        
+        if($this->cfg['integration.enabled'] && $user->exists && !Auth::check())
+            Auth::login($user);
+        
+        return $user;
 	}
 
 	/**
@@ -531,7 +536,7 @@ class Provider implements ProviderContract {
      * @alias this.channels.me
      */
     public function channel($params){
-        return $this->channels()->mine($params);
+        return $this->channels()->me($params);
     }
     
     /**

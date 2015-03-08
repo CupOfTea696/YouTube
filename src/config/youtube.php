@@ -151,7 +151,7 @@ return [
 	| Integration Settings
 	|--------------------------------------------------------------------------
 	|
-	| Settings for integration
+	| Settings for auth integration
 	|
 	*/
     

@@ -19,7 +19,7 @@
             'methods': ['list', 'update'],
             'aliases': {
                 'me': 'list.mine',
-                'icon': 'list.mine.icon'
+                'icon': 'list.icon'
             }
         },
         'banners()': {
