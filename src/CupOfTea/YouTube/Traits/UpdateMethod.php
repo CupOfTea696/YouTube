@@ -1,13 +1,15 @@
 <?php namespace CupOfTea\YouTube\Traits;
 
 trait UpdateMethod{
-    protected function _update($httpClient, $url, $json, $parameters = []){
-        $headers = $this->authorised ? ['Authorization' => 'Bearer ' . $token] : [];
+    protected function _update(\GuzzleHttp\Client $httpClient, $url, $json, $token, $parameters = []){
+        $headers = $token ? ['Authorization' => 'Bearer ' . $token] : [];
         $response = $httpClient->put($url, [
-            'query' => $this->getAllParameters($parameters),
+            'json' => $json,
+            'query' => $parameters,
             'headers' => $headers,
         ]);
         
         return json_decode($response->getBody());
     }
 }
+

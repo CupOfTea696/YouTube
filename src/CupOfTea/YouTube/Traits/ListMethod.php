@@ -1,10 +1,10 @@
 <?php namespace CupOfTea\YouTube\Traits;
 
 trait ListMethod{
-    protected function _list($httpClient, $url, $parameters = []){
-        $headers = $this->authorised ? ['Authorization' => 'Bearer ' . $token] : [];
+    protected function _list(\GuzzleHttp\Client $httpClient, $url, $token, $parameters = []){
+        $headers = $token ? ['Authorization' => 'Bearer ' . $token] : [];
         $response = $httpClient->get($url, [
-            'query' => $this->getAllParameters($parameters),
+            'query' => $parameters,
             'headers' => $headers,
         ]);
         

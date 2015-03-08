@@ -1,13 +1,14 @@
 <?php namespace CupOfTea\YouTube\Traits;
 
 trait UnsetMethod{
-    protected function _unset($httpClient, $url. $parameters = []){
-        $headers = $this->authorised ? ['Authorization' => 'Bearer ' . $token] : [];
+    protected function _unset(\GuzzleHttp\Client $httpClient, $url, $token, $parameters = []){
+        $headers = $token ? ['Authorization' => 'Bearer ' . $token] : [];
         $response = $httpClient->post($url, [
-            'query' => $this->getAllParameters($parameters),
+            'query' => $parameters,
             'headers' => $headers,
         ]);
         
         return $response->getStatusCode() == 204;
     }
 }
+
