@@ -4,9 +4,13 @@ use Auth;
 use Illuminate\Http\Request;
 use CupOfTea\YouTube\Models\RefreshToken;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use CupOfTea\YouTube\Exceptions\ResourceNotFoundException;
 use CupOfTea\YouTube\Contracts\Provider as ProviderContract;
 
 class Provider implements ProviderContract {
+    
+    const PACKAGE = 'CupOfTea/YouTube';
+    const VERSION = '0.1.1-alpha';
 
 	/**
 	 * Available Resources for this API.
@@ -96,7 +100,7 @@ class Provider implements ProviderContract {
 	 */
 	public function __construct(Request $request, $clientId, $clientSecret, $cfg)
 	{
-		$this->request = $request;
+        $this->request = $request;
         $this->session = $request->getSession();
 		$this->clientId = $clientId;
 		$this->clientSecret = $clientSecret;
@@ -446,10 +450,25 @@ class Provider implements ProviderContract {
 	 *
 	 * @return \GuzzleHttp\Client
 	 */
-	protected function getHttpClient($base_url = false){
+	public function getHttpClient($base_url = false){
         $base_url = $base_url ? $base_url : $this->base_url;
         
-        return new \GuzzleHttp\Client(['base_url' => $this->base_url]);
+        $defaultAgent = self::PACKAGE . '/' . self::VERSION;
+        $defaultAgent .= ' Guzzle/' . \GuzzleHttp\ClientInterface::VERSION;
+        if(extension_loaded('curl'))
+            $defaultAgent .= ' curl/' . curl_version()['version'];
+        $defaultAgent .= ' PHP/' . PHP_VERSION;
+        $defaultAgent .= ' (gzip)';
+        
+        return new \GuzzleHttp\Client([
+            'base_url' => $base_url,
+            'defaults' => [
+                'headers' => [
+                    'User-Agent' => $defaultAgent,
+                    'Accept-Encoding' => 'gzip',
+                ],
+            ],
+        ]);
 	}
 
 	/**
@@ -474,14 +493,14 @@ class Provider implements ProviderContract {
 	 */
     public function __call($resource, $a){
         $resource = strtolower($resource);
-        if(!array_get($resource, $this->available_resources))
+        if(!in_array($resource, $this->available_resources))
             throw new ResourceNotFoundException(ucfirst($resource));
         
-        if($instance = array_get($resource, $this->resources))
+        if($instance = in_array($resource, $this->resources))
             return $instance;
         
-        $instance = 'Resource\\' . ucfirst($resource);
-        return $this->resources[$resource] = new $instance($this);
+        $instance = __NAMESPACE__ . '\\Resource\\' . ucfirst($resource);
+        return $this->resources[$resource] = new $instance($this, $this->cfg);
     }
     
     /*************************/

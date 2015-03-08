@@ -1,14 +1,13 @@
 <?php namespace CupOfTea\YouTube\API\Resource;
 
-use ArrayAccess;
 use CupOfTea\YouTube\Contracts\Provider;
+use CupOfTea\YouTube\Abstraction\Resource;
 use CupOfTea\YouTube\Exceptions\UnauthorisedException;
-use CupOfTea\YouTube\Contracts\Resource as ResourceContract;
 
 use CupOfTea\YouTube\Traits\GetMethod, CupOfTea\YouTube\Traits\InsertMethod;
     CupOfTea\YouTube\Traits\DeleteMethod
 
-class Activities implements ArrayAccess, ResourceContract {
+class Subscriptions extends Resource {
     
     use GetMethod, InsertMethod, DeleteMethod;
     

@@ -1,19 +1,21 @@
 <?php namespace CupOfTea\YouTube\API\Resource;
 
-use ArrayAccess;
 use CupOfTea\YouTube\Contracts\Provider;
+use CupOfTea\YouTube\Abstraction\Resource;
+use CupOfTea\YouTube\Traits\HasSubResources;
 use CupOfTea\YouTube\Exceptions\UnauthorisedException;
-use CupOfTea\YouTube\Contracts\Resource as ResourceContract;
-use CupOfTea\YouTube\Contracts\HasSubResources as HasSubResourcesContract;
 
-use CupOfTea\YouTube\Traits\GetMethod, CupOfTea\YouTube\Traits\UpdateMethod;
+use CupOfTea\YouTube\Traits\ListMethod, CupOfTea\YouTube\Traits\UpdateMethod;
 
-class Channels implements ArrayAccess, ResourceContract, HasSubResourcesContract {
+class Channels extends Resource{
     
-    use GetMethod, UpdateMethod;
+    use ListMethod, UpdateMethod,
+        HasSubResources;
     
     /**
-	 * {@inheritdoc}
+	 * Available SubResources for this API.
+	 *
+	 * @var array
 	 */
 	protected $available_subresources = ['banners', 'sections'];
     
