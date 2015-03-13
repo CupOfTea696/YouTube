@@ -1,6 +1,7 @@
 <?php namespace CupOfTea\YouTube\Abstraction;
 
 use CupOfTea\YouTube\Contracts\Provider;
+use CupOfTea\YouTube\Exceptions\ApiErrorException;
 use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 use CupOfTea\YouTube\Exceptions\MethodNotFoundException;
 
@@ -135,14 +136,22 @@ abstract class Resource {
 	 * @param    array   $properties
 	 * @return   \CupOfTea\YouTube\Contracts\Resource
 	 * @throws   UnauthorisedException if the method needs user authentication.
-	 * @triggers E_USER_ERROR if the method doesn't exist for this Resource.
+	 * @throws   MethodNotFoundException if the method doesn't exist for this Resource.
+	 * @throws   ApiErrorException if an API error occured.
 	 */
 	public function __call($method, $args){
         $this->beforeMethod($method);
         $parameters = &$args[0];
         
         $parameters = $this->getAllParameters($parameters);
-        array_unshift($args, $this->getHttpClient(), $this->urlSegment, $this->authorised ? $this->tokens['access_token'] : '');
+        array_unshift(
+            $args,
+            $this->getHttpClient(),
+            $this->urlSegment,
+            $this->authorised ? $this->tokens['access_token'] : '',
+            [$this, 'apiErrorHandler']
+        );
+        
         return call_user_func_array([$this, '_' . $method], $args);
     }
     
@@ -181,6 +190,25 @@ abstract class Resource {
     protected function methodCheck($method){
         if(!in_array('CupOfTea\\YouTube\\Traits\\' . ucwords($method) . 'Method', class_uses($this)))
             throw new MethodNotFoundException(__CLASS__, $method);
+    }
+    
+    public function apiErrorHandler($e){
+        if($e->hasResponse()){
+            $response = $e->getResponse();
+            $body = json_decode($response->getBody(), true);
+            $code = $response->getStatusCode();
+            
+            $msg  = 'API Error response:' . PHP_EOL;
+            $msg .= PHP_EOL;
+            $msg .= '  [message] ' . $body['error']['message'] . PHP_EOL;
+            $msg .= '  [url] ' . $e->getRequest()->getUrl() . PHP_EOL;
+            $msg .= '  [status code] ' . $code . PHP_EOL;
+            $msg .= '  [reason phrase] ' . $response->getReasonPhrase() . PHP_EOL;
+            
+            throw new ApiErrorException($msg, $code);
+        }
+        
+        throw $e;
     }
 
 }
