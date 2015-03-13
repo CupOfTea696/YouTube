@@ -4,15 +4,18 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model;
 
 class RefreshToken extends Model{
-    protected $primaryKey = 'tokenID';
+    protected $primaryKey = 'refreshTokenID';
     
     protected $table;
     protected $fillable;
+    protected $userKey;
     
     public $timestamps = false;
     
     public function __construct(array $attributes = []){
-        $this->userKey = ('\\' . Config::get('auth.model'))::getKeyName();
+        $model = '\\' . Config::get('auth.model');
+        
+        $this->userKey = (new $model)->getKeyName();
         $this->table = Config::get('youtube.table');
         $this->fillable = ['token', $this->userKey];
         

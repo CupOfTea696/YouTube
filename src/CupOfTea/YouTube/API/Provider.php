@@ -109,7 +109,7 @@ class Provider implements ProviderContract {
         $this->cfg = $cfg;
         $this->tokens = $this->session->get($this->package('dot') . '.tokens', []);
         
-        if($this->cfg['integration.enabled'] && !$this->tokens && Auth::check())
+        if($this->cfg['integration']['enabled'] && !$this->tokens && Auth::check())
             $this->getRefreshTokenByUser(Auth::user());
 	}
 
@@ -145,7 +145,7 @@ class Provider implements ProviderContract {
 		$response = $this->getHttpClient()->get('/plus/v1/people/me?',[
 			'query' => [
 				'prettyPrint' => 'false',
-                'fields' => $this->cfg['fields.google'],
+                'fields' => $this->cfg['fields']['google'],
 			],
 			'headers' => [
 				'Authorization' => 'Bearer ' . $token,
@@ -167,13 +167,31 @@ class Provider implements ProviderContract {
 	 */
 	protected function mapUser(array $user)
 	{
-        $userData = [];
-        foreach($this->cfg['map'] as $key => $prop){
-            if(!$this->cfg['integration.enabled'] || ($this->cfg['integration.youtube_id_as_primary_key'] && $prop != 'id'))
-                $userData[$key] = array_dot($user)[$prop];
+        foreach($user as $key => $value){
+            if($key == 'items'){
+                $user = array_merge($user, array_dot($user['items'][0], 'youtube.'));
+            }elseif(is_array($value)){
+                $user = array_merge($user, array_dot($value, 'google.' . $key . '.'));
+            }else{
+                $user['google.' . $key] = $value;
+            }
+            
+            unset($user[$key]);
         }
         
-        if($this->cfg['integration.enabled'])
+        if($this->cfg['integration']['enabled'] && $this->cfg['integration']['youtube_id_as_primary_key']){
+            $model = new $this->cfg['auth_model'];
+            $key = $model->getKeyName();
+            
+            $this->cfg['map'][$key] = 'youtube.id';
+        }
+        
+        $userData = [];
+        foreach($this->cfg['map'] as $key => $prop){
+            $userData[$key] = array_dot($user)[$prop];
+        }
+        
+        if($this->cfg['integration']['enabled'])
             return $this->mapUserToModel($user, $userData); // auth.model
         
 		return (new User)->setRaw($user)->map($userData);
@@ -187,13 +205,13 @@ class Provider implements ProviderContract {
 	 */
     protected function mapUserToModel($rawData, $userData){
         $model = $this->cfg['auth_model'];
-        $user = $this->cfg['integration.youtube_id_as_primary_key'] ?
-            $model::findOrNew($rawData['id']) :
-            $model::firstOrNew([array_search('id', $this->cfg['map']) => $rawData['id']]);
+        $user = $this->cfg['integration']['youtube_id_as_primary_key'] ?
+            $model::findOrNew($rawData['youtube.id']) :
+            $model::firstOrNew([array_search('youtube.id', $this->cfg['map']) => $rawData['youtube.id']]);
         
-        $user->fill(array_add($userData, $this->cfg['integration.raw_property'], $rawData));
+        $user->fill(array_add($userData, $this->cfg['integration']['raw_property'], $rawData));
         
-        if($this->cfg['integration.auto_update'] && $user->isDirty())
+        if($this->cfg['integration']['auto_update'] && $user->isDirty())
             $user->save();
         
         if($user->exists){
@@ -206,8 +224,11 @@ class Provider implements ProviderContract {
     }
     
     public function saveRefreshToken($user){
-        $refreshToken = RefreshToken::firstOrCreate([$user->getKeyName() => $user->getKey()]);
-        $refreshToken->fill(['token' => $this->tokens['refresh_token']])->save();
+        if(!$this->tokens['refresh_token'])
+            return $this;
+        
+        $refreshToken = RefreshToken::firstOrNew([$user->getKeyName() => $user->getKey()]);
+        $refreshToken->fill(['token' => $this->tokens['refresh_token'], $user->getKeyName() => $user->getKey()])->save();
         
         return $this;
     }
@@ -219,7 +240,7 @@ class Provider implements ProviderContract {
 	 */
 	public function redirect()
 	{
-		$this->session->set(
+		$this->session->put(
 			$this->package('dot') . '.state', $state = sha1(time().$this->session->get('_token'))
 		);
 
@@ -327,16 +348,19 @@ class Provider implements ProviderContract {
         
         $user = [];
         
-        if($this->cfg['fields.google'])
+        if($this->cfg['fields']['google'])
             $user = $this->getUserByToken($this->tokens['access_token']);
         
-        if($this->cfg['fields.youtube'])
-            $user = array_replace_recursive($user, $this->channel($this->cfg['fields.youtube']));
+        if($this->cfg['fields']['youtube'])
+            $user = array_replace_recursive($user, $this->channel(['fields' => $this->cfg['fields']['youtube']]));
         
 		$user = $this->mapUser($user);
         
-        if($this->cfg['integration.enabled'] && $user->exists && !Auth::check())
-            Auth::login($user);
+        if($this->cfg['integration']['enabled'] && $user->exists && !Auth::check())
+            Auth::login($user, true);
+        
+        // Auth::login resets session, so store this again.
+        $this->session->put($this->package('dot') . '.tokens', $this->tokens);
         
         return $user;
 	}
@@ -366,7 +390,7 @@ class Provider implements ProviderContract {
 			'body' => $this->getTokenFields($code),
 		]);
         $this->tokens = $this->parseTokens($response->getBody());
-        $this->session->set($this->package('dot') . '.tokens', $this->tokens);
+        $this->session->put($this->package('dot') . '.tokens', $this->tokens);
         
         return $this;
 	}
@@ -398,7 +422,7 @@ class Provider implements ProviderContract {
 			'body' => $this->getRefreshFields(),
 		]);
         $this->tokens = $this->parseTokens($response->getBody());
-        $this->session->set($this->package('dot') . '.tokens', $this->tokens);
+        $this->session->put($this->package('dot') . '.tokens', $this->tokens);
         
         return $this;
 	}

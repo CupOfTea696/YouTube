@@ -11,24 +11,6 @@ class YouTubeServiceProvider extends ServiceProvider {
 	 */
 	protected $defer = true;
     
-    protected function array_dot_assoc($array, $prepend = ''){
-		$results = [];
-
-		foreach ($array as $key => $value)
-		{
-			if (is_array($value) && count(array_filter(array_keys($value), 'is_string')))
-			{
-				$results = array_merge($results, $this->array_dot_assoc($value, $prepend.$key.'.'));
-			}
-			else
-			{
-				$results[$prepend.$key] = $value;
-			}
-		}
-
-		return $results;
-    }
-    
     /**
      * Bootstrap the application events.
      *
@@ -58,7 +40,7 @@ class YouTubeServiceProvider extends ServiceProvider {
 		$this->app->bindShared('CupOfTea\YouTube\Contracts\Factory', function($app)
 		{
             $config = $this->app['config']['services.google'];
-            $ytConfig = $this->array_dot_assoc(array_add($this->app['config']['youtube'], 'auth_model', $this->app['config']['auth.model']));
+            $ytConfig = array_add($this->app['config']['youtube'], 'auth_model', $this->app['config']['auth.model']);
             
 			return new API\Provider(
                 $this->app['request'], $config['client_id'],

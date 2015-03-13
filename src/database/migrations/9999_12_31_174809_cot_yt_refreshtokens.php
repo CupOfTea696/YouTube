@@ -30,7 +30,10 @@ class CotYtRefreshtokens extends Migration {
 		{
 			$table->increments('refreshTokenID');
 			$table->string('token', 45);
-            $table->integer($this->userKey)->unsigned();
+            if(Config::get('youtube.integration.youtube_id_as_primary_key'))
+                $table->string($this->userKey, 24);
+            else
+                $table->integer($this->userKey)->unsigned();
 			$table->foreign($this->userKey)
                   ->references($this->userKey)->on($this->userTable)
                   ->onDelete('cascade');
