@@ -24,10 +24,12 @@ class Channels extends Resource{
 	 */
     protected $urlSegment = 'channels';
     
-    public function me(){
+    public function me($parameters = []){
         $this->authenticated();
+        $parameters['part'] = array_key_exists('part', $parameters) ? $parameters['part'] : 'id,snippet';
+        $parameters['mine'] = 'true';
         
-        return $this->list(['mine' => 'true']);
+        return $this->list($parameters);
     }
     
     
