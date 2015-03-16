@@ -377,7 +377,9 @@ class Provider implements ProviderContract {
 	 */
 	protected function hasInvalidState()
 	{
-		return ! ($this->request->input('state') === $this->session->get($this->package('dot') . '.state'));
+        $state = $this->request->input('state') ? $this->request->input('state') : $this->request->old('state');
+        
+		return ! ($state === $this->session->get($this->package('dot') . '.state'));
 	}
 
 	/**
@@ -483,7 +485,7 @@ class Provider implements ProviderContract {
 	 */
 	protected function getCode()
 	{
-		return $this->request->input('code');
+        return $this->request->input('code') ? $this->request->input('code') : $this->request->old('code');
 	}
 
 	/**
