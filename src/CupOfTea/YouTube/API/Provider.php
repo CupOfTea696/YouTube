@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use CupOfTea\YouTube\Models\RefreshToken;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use CupOfTea\YouTube\Exceptions\InvalidStateException;
+use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 use CupOfTea\YouTube\Exceptions\ResourceNotFoundException;
 use CupOfTea\YouTube\Contracts\Provider as ProviderContract;
 
@@ -256,6 +257,9 @@ class Provider implements ProviderContract {
         if($code = $this->getCode())
             return $this->getTokensByCode($code);
         
+        if(!$this->isAuthenticated())
+            return false;
+        
         if(!$this->hasValidToken())
             return $this->refresh();
     }
@@ -343,8 +347,9 @@ class Provider implements ProviderContract {
 	 */
 	public function user()
 	{
-		if(!array_get($this->tokens, 'access_token'))
-            $this->login();
+		if(!$this->hasValidToken())
+            if(!$this->login())
+                throw new UnauthorisedException;
         
         $user = [];
         
