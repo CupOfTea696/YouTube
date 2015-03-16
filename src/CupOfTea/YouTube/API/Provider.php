@@ -157,7 +157,7 @@ class Provider implements ProviderContract {
 	}
     
     protected function getRefreshTokenByUser($user){
-        $this->tokens['refresh_token'] = RefreshToken::where($user->getKeyName(), $user->getKey())->token;
+        $this->tokens['refresh_token'] = RefreshToken::where($user->getKeyName(), $user->getKey())->first()->token;
     }
 
 	/**
@@ -441,8 +441,8 @@ class Provider implements ProviderContract {
 	{
 		return [
 			'client_id' => $this->clientId, 'client_secret' => $this->clientSecret,
-			'refresh_token ' => $this->tokens['refresh_token'], 'redirect_uri' => $this->cfg['redirect_url'],
-            'grant_type' => 'refresh_token ',
+			'refresh_token' => $this->tokens['refresh_token'], 'redirect_uri' => $this->cfg['redirect_url'],
+            'grant_type' => 'refresh_token',
 		];
 	}
     
