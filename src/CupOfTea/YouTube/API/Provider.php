@@ -13,7 +13,7 @@ use CupOfTea\YouTube\Contracts\Provider as ProviderContract;
 class Provider implements ProviderContract {
     
     const PACKAGE = 'CupOfTea/YouTube';
-    const VERSION = '0.2.2-beta';
+    const VERSION = '0.2.3-beta';
 
 	/**
 	 * Available Resources for this API.
