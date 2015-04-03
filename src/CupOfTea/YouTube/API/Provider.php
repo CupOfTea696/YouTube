@@ -13,7 +13,7 @@ use CupOfTea\YouTube\Contracts\Provider as ProviderContract;
 class Provider implements ProviderContract, Serializable {
     
     const PACKAGE = 'CupOfTea/YouTube';
-    const VERSION = '0.2.4-beta';
+    const VERSION = '0.3.0-beta';
 
 	/**
 	 * Available Resources for this API.
@@ -117,7 +117,7 @@ class Provider implements ProviderContract, Serializable {
     
     /**
 	 * Get this instance.
-	 * 
+	 *
 	 * @return $this
 	 */
     public function instance(){
