@@ -2,6 +2,7 @@
 
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Session\Store as Session;
 use CupOfTea\YouTube\Models\RefreshToken;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use CupOfTea\YouTube\Exceptions\InvalidStateException;
@@ -48,6 +49,20 @@ class Provider implements ProviderContract {
 	 * @var Session
 	 */
     protected $session;
+
+	/**
+	 * The input code.
+	 *
+	 * @var Request
+	 */
+	protected $code;
+
+	/**
+	 * The state.
+	 *
+	 * @var Request
+	 */
+	protected $state;
 
 	/**
 	 * This package's configuration
@@ -377,9 +392,9 @@ class Provider implements ProviderContract {
 	 */
 	protected function hasInvalidState()
 	{
-        $state = $this->request->input('state') ? $this->request->input('state') : $this->request->old('state');
+        $this->state = $this->state ? $this->state : $this->request->input('state') ? $this->request->input('state') : $this->request->old('state');
         
-		return ! ($state === $this->session->get($this->package('dot') . '.state'));
+		return ! ($this->state === $this->session->get($this->package('dot') . '.state'));
 	}
 
 	/**
@@ -485,7 +500,7 @@ class Provider implements ProviderContract {
 	 */
 	protected function getCode()
 	{
-        return $this->request->input('code') ? $this->request->input('code') : $this->request->old('code');
+        return $this->code ? $this->code : $this->request->input('code') ? $this->request->input('code') : $this->request->old('code');
 	}
 
 	/**
@@ -525,7 +540,46 @@ class Provider implements ProviderContract {
 	{
 		$this->request = $request;
         $this->session = $request->getSession();
+        
+		return $this;
+	}
 
+	/**
+	 * Set the request instance.
+	 *
+	 * @param  Session  $session
+	 * @return $this
+	 */
+	public function setSession(Session $session)
+	{
+        $this->session = $session;
+        
+		return $this;
+	}
+
+	/**
+	 * Set the input code.
+	 *
+	 * @param  string  $code
+	 * @return $this
+	 */
+	public function setCode($code)
+	{
+		$this->code = $code;
+        
+		return $this;
+	}
+
+	/**
+	 * Set the state.
+	 *
+	 * @param  string  $state
+	 * @return $this
+	 */
+	public function setState($state)
+	{
+		$this->state = $state;
+        
 		return $this;
 	}
     
