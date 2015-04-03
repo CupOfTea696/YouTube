@@ -1,6 +1,7 @@
 <?php namespace CupOfTea\YouTube\API;
 
 use Auth;
+use Serializable;
 use Illuminate\Http\Request;
 use CupOfTea\YouTube\Models\RefreshToken;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -9,7 +10,7 @@ use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 use CupOfTea\YouTube\Exceptions\ResourceNotFoundException;
 use CupOfTea\YouTube\Contracts\Provider as ProviderContract;
 
-class Provider implements ProviderContract {
+class Provider implements ProviderContract, Serializable {
     
     const PACKAGE = 'CupOfTea/YouTube';
     const VERSION = '0.2.4-beta';
@@ -36,18 +37,18 @@ class Provider implements ProviderContract {
     protected $resources = [];
 
 	/**
-	 * The HTTP request instance.
-	 *
-	 * @var Request
-	 */
-	protected $request;
-
-	/**
 	 * The Session instance.
 	 *
 	 * @var Session
 	 */
     protected $session;
+    
+    /**
+	 * The HTTP request input.
+	 *
+	 * @var Array
+	 */
+    protected $input;
 
 	/**
 	 * This package's configuration
@@ -102,7 +103,7 @@ class Provider implements ProviderContract {
 	 */
 	public function __construct(Request $request, $clientId, $clientSecret, $cfg)
 	{
-        $this->request = $request;
+        $this->input = $request->old() + $request->all();
         $this->session = $request->getSession();
 		$this->clientId = $clientId;
 		$this->clientSecret = $clientSecret;
@@ -113,6 +114,15 @@ class Provider implements ProviderContract {
         if($this->cfg['integration']['enabled'] && !$this->tokens && Auth::check())
             $this->getRefreshTokenByUser(Auth::user());
 	}
+    
+    /**
+	 * Get this instance.
+	 * 
+	 * @return $this
+	 */
+    public function instance(){
+        return $this;
+    }
 
 	/**
 	 * Get the authentication URL for the provider.
@@ -377,7 +387,7 @@ class Provider implements ProviderContract {
 	 */
 	protected function hasInvalidState()
 	{
-        $state = $this->request->input('state') ? $this->request->input('state') : $this->request->old('state');
+        $state = array_get($this->input, 'state');
         
 		return ! ($state === $this->session->get($this->package('dot') . '.state'));
 	}
@@ -485,7 +495,7 @@ class Provider implements ProviderContract {
 	 */
 	protected function getCode()
 	{
-        return $this->request->input('code') ? $this->request->input('code') : $this->request->old('code');
+        return array_get($this->input, 'code');
 	}
 
 	/**
@@ -523,9 +533,9 @@ class Provider implements ProviderContract {
 	 */
 	public function setRequest(Request $request)
 	{
-		$this->request = $request;
+        $this->input = $request->old() + $request->all();
         $this->session = $request->getSession();
-
+        
 		return $this;
 	}
     
@@ -545,6 +555,26 @@ class Provider implements ProviderContract {
         
         $instance = __NAMESPACE__ . '\\Resource\\' . ucfirst($resource);
         return $this->resources[$resource] = new $instance($this, $this->session, $this->cfg);
+    }
+    
+    public function serialize(){
+        return serialize([
+            'session' => $this->session,
+            'clientId' => $this->clientId,
+            'clientSecret' => $this->clientSecret,
+            'cfg' => $this->cfg,
+            'tokens' => $this->tokens
+        ]);
+    }
+    
+    public function unserialize($data){
+        $array = unserialize($data);
+        
+        $this->session = $array['session'];
+        $this->clientId = $array['clientId'];
+        $this->clientSecret = $array['clientSecret'];
+        $this->cfg = $array['cfg'];
+        $this->tokens = $array['tokens'];
     }
     
     /**
