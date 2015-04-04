@@ -239,7 +239,8 @@ class Provider implements ProviderContract, Serializable {
             return $this;
         
         $refreshToken = RefreshToken::firstOrNew([$user->getKeyName() => $user->getKey()]);
-        $refreshToken->fill(['token' => $this->tokens['refresh_token'], $user->getKeyName() => $user->getKey()])->save();
+        if($refreshToken->isDirety())
+            $refreshToken->fill(['token' => $this->tokens['refresh_token'], $user->getKeyName() => $user->getKey()])->save();
         
         return $this;
     }
