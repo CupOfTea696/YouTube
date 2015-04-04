@@ -220,9 +220,10 @@ class Provider implements ProviderContract, Serializable {
             $model::findOrNew($rawData['youtube.id']) :
             $model::firstOrNew([array_search('youtube.id', $this->cfg['map']) => $rawData['youtube.id']]);
         
+        $user->isNewUser = $user->isDirty();
         $user->fill(array_add($userData, $this->cfg['integration']['raw_property'], $rawData));
         
-        if($this->cfg['integration']['auto_update'] && $user->isDirty())
+        if($this->cfg['integration']['auto_update'] && $user->isNewUser)
             $user->save();
         
         if($user->exists){
