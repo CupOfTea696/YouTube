@@ -3,6 +3,7 @@
 use Auth;
 use Serializable;
 use Illuminate\Http\Request;
+use CupOfTea\Package\Package;
 use CupOfTea\YouTube\Models\RefreshToken;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use CupOfTea\YouTube\Exceptions\InvalidStateException;
@@ -11,10 +12,12 @@ use CupOfTea\YouTube\Exceptions\ResourceNotFoundException;
 use CupOfTea\YouTube\Contracts\Provider as ProviderContract;
 
 class Provider implements ProviderContract, Serializable {
+
+    use Package;
     
     const PACKAGE = 'CupOfTea/YouTube';
     const VERSION = '0.3.1-beta';
-
+    
 	/**
 	 * Available Resources for this API.
 	 *
@@ -35,7 +38,7 @@ class Provider implements ProviderContract, Serializable {
 	 * @var array
 	 */
     protected $resources = [];
-
+    
 	/**
 	 * The Session instance.
 	 *
@@ -49,49 +52,49 @@ class Provider implements ProviderContract, Serializable {
 	 * @var Array
 	 */
     protected $input;
-
+    
 	/**
 	 * This package's configuration
 	 *
-	 * @var string
+	 * @var array
 	 */
 	protected $cfg;
-
+    
 	/**
 	 * The client ID.
 	 *
 	 * @var string
 	 */
 	protected $clientId;
-
+    
 	/**
 	 * The client secret.
 	 *
 	 * @var string
 	 */
 	protected $clientSecret;
-
+    
 	/**
 	 * The access and refresh tokens
 	 *
 	 * @var array
 	 */
 	protected $tokens;
-
+    
 	/**
 	 * The type of the encoding in the query.
 	 *
 	 * @var int Can be either PHP_QUERY_RFC3986 or PHP_QUERY_RFC1738.
 	 */
 	protected $encodingType = PHP_QUERY_RFC1738;
-
+    
 	/**
      * Wether the user will be prompted to grant account access to your application each time they try to complete a particular action.
 	 *
 	 * @var bool
 	 */
 	protected $prompt = false;
-
+    
 	/**
 	 * Create a new provider instance.
 	 *
@@ -99,6 +102,7 @@ class Provider implements ProviderContract, Serializable {
 	 * @param  string  $clientId
 	 * @param  string  $clientSecret
 	 * @param  string  $redirectUrl
+	 * @param  array   $cfg
 	 * @return void
 	 */
 	public function __construct(Request $request, $clientId, $clientSecret, $cfg)
@@ -123,7 +127,7 @@ class Provider implements ProviderContract, Serializable {
     public function instance(){
         return $this;
     }
-
+    
 	/**
 	 * Get the authentication URL for the provider.
 	 *
@@ -134,7 +138,7 @@ class Provider implements ProviderContract, Serializable {
 	{
 		return $this->buildAuthUrlFromBase('https://accounts.google.com/o/oauth2/auth', $state);
 	}
-
+    
 	/**
 	 * Get the token URL for the provider.
 	 *
@@ -144,7 +148,7 @@ class Provider implements ProviderContract, Serializable {
 	{
 		return '/oauth2/v3/token';
 	}
-
+    
 	/**
 	 * Get the raw user for the given access token.
 	 *
@@ -162,14 +166,14 @@ class Provider implements ProviderContract, Serializable {
 				'Authorization' => 'Bearer ' . $token,
 			],
 		]);
-
+        
 		return json_decode($response->getBody(), true);
 	}
     
     protected function getRefreshTokenByUser($user){
         $this->tokens['refresh_token'] = RefreshToken::where($user->getKeyName(), $user->getKey())->first()->token;
     }
-
+    
 	/**
 	 * Map the raw user array to an Auth Model or a YouTube User instance.
 	 *
@@ -207,7 +211,7 @@ class Provider implements ProviderContract, Serializable {
         
 		return (new User)->setRaw($user)->map($userData);
 	}
-
+    
 	/**
 	 * Map the raw user array to an Auth Model instance.
 	 *
@@ -256,7 +260,7 @@ class Provider implements ProviderContract, Serializable {
 		$this->session->put(
 			$this->package('dot') . '.state', $state = sha1(time().$this->session->get('_token'))
 		);
-
+        
 		return new RedirectResponse($this->getAuthUrl($state));
 	}
     
@@ -321,7 +325,7 @@ class Provider implements ProviderContract, Serializable {
         if(array_get($this->tokens, 'refresh_token'))
             return $this->getTokensByRefresh();
     }
-
+    
 	/**
 	 * Get the authentication URL for the provider.
 	 *
@@ -342,7 +346,7 @@ class Provider implements ProviderContract, Serializable {
         
 		return $url.'?'.http_build_query($query, '', '&', $this->encodingType );
 	}
-
+    
 	/**
 	 * Format the given scopes.
 	 *
@@ -353,7 +357,7 @@ class Provider implements ProviderContract, Serializable {
 	{
 		return implode(' ', $scopes);
 	}
-
+    
 	/**
 	 * {@inheritdoc}
 	 */
@@ -381,7 +385,7 @@ class Provider implements ProviderContract, Serializable {
         
         return $user;
 	}
-
+    
 	/**
 	 * Determine if the current request / session has a mismatching "state".
 	 *
@@ -393,7 +397,7 @@ class Provider implements ProviderContract, Serializable {
         
 		return ! ($state === $this->session->get($this->package('dot') . '.state'));
 	}
-
+    
 	/**
 	 * Get the access and refresh token for the given code.
 	 *
@@ -428,7 +432,7 @@ class Provider implements ProviderContract, Serializable {
             'grant_type' => 'authorization_code',
 		];
 	}
-
+    
 	/**
 	 * Get the access and refresh token for the given code.
 	 *
@@ -463,7 +467,7 @@ class Provider implements ProviderContract, Serializable {
     public function getTokens(){
         return $this->tokens;
     }
-
+    
 	/**
 	 * Get the access and refresh token from the token response body.
 	 *
@@ -489,7 +493,7 @@ class Provider implements ProviderContract, Serializable {
         if(!$this->hasValidToken())
             $this->refresh();
     }
-
+    
 	/**
 	 * Get the code from the request.
 	 *
@@ -499,7 +503,7 @@ class Provider implements ProviderContract, Serializable {
 	{
         return array_get($this->input, 'code');
 	}
-
+    
 	/**
 	 * Get a fresh instance of the Guzzle HTTP client.
 	 *
@@ -526,7 +530,7 @@ class Provider implements ProviderContract, Serializable {
             ],
         ]);
 	}
-
+    
 	/**
 	 * Set the request instance.
 	 *
@@ -610,34 +614,5 @@ class Provider implements ProviderContract, Serializable {
     public function avatar($size, $fallback = true){
         return $this->channels()->my()->avatar($size, $fallback);
     }
-    
-    /**
-     * Package Info
-     *
-     */
-    
-    /**
-     * Package Info
-     *
-     * @return string
-     */
-    public function package($info = false){
-        if($info == 'dot')
-            return strtolower(str_replace('/', '.', self::PACKAGE));
-        
-        if($info == 'v')
-            return self::PACKAGE . '/' . self::VERSION;
-        
-        return self::PACKAGE;
-    }
-    
-    /**
-     * Package Version
-     *
-     * @return string
-     */
-    public function version(){
-        return self::VERSION;
-    }
-    
+
 }
