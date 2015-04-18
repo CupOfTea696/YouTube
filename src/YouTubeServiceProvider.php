@@ -18,11 +18,11 @@ class YouTubeServiceProvider extends ServiceProvider {
      */
     public function boot(){
         $this->publishes([
-            __DIR__.'/../../config/youtube.php' => config_path('youtube.php'),
+            __DIR__.'/../config/youtube.php' => config_path('youtube.php'),
         ], 'config');
         
         $this->publishes([
-            __DIR__.'/../../database/migrations/' => base_path('/database/migrations')
+            __DIR__.'/../database/migrations/' => base_path('/database/migrations')
         ], 'migrations');
     }
 
@@ -34,7 +34,7 @@ class YouTubeServiceProvider extends ServiceProvider {
 	public function register()
 	{
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/youtube.php', 'youtube'
+            __DIR__.'/../config/youtube.php', 'youtube'
         );
         
 		$this->app->bindShared('CupOfTea\YouTube\Contracts\Factory', function($app)

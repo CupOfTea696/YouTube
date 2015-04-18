@@ -1,4 +1,4 @@
-<?php namespace CupOfTea\YouTube\API;
+<?php namespace CupOfTea\YouTube;
 
 use Auth;
 use Serializable;
