@@ -42,7 +42,7 @@ class YouTubeServiceProvider extends ServiceProvider {
             $config = $this->app['config']['services.google'];
             $ytConfig = array_add($this->app['config']['youtube'], 'auth_model', $this->app['config']['auth.model']);
             
-			return new API\Provider(
+			return new YouTube(
                 $this->app['request'], $config['client_id'],
                 $config['client_secret'], $ytConfig
             );
