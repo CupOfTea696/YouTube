@@ -117,7 +117,7 @@ class Provider implements ProviderContract, Serializable {
         
         if($this->cfg['integration']['enabled'] && !$this->tokens && Auth::check())
             $this->getRefreshTokenByUser(Auth::user());
-	}
+	} 
     
     /**
 	 * Get this instance.
