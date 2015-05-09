@@ -117,7 +117,7 @@ class Provider implements ProviderContract, Serializable {
         
         if($this->cfg['integration']['enabled'] && !$this->tokens && Auth::check())
             $this->getRefreshTokenByUser(Auth::user());
-	} 
+	}
     
     /**
 	 * Get this instance.
@@ -227,7 +227,7 @@ class Provider implements ProviderContract, Serializable {
         $user->isNewUser = $user->isDirty();
         $user->fill(array_add($userData, $this->cfg['integration']['raw_property'], $rawData));
         
-        if($this->cfg['integration']['auto_update'] && $user->isNewUser)
+        if($this->cfg['integration']['auto_update'] && $user->isDirty())
             $user->save();
         
         if($user->exists){
