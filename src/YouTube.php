@@ -16,7 +16,7 @@ class Provider implements ProviderContract, Serializable {
     use Package;
     
     const PACKAGE = 'CupOfTea/YouTube';
-    const VERSION = '0.3.2-beta-patch';
+    const VERSION = '0.3.3-beta';
     
 	/**
 	 * Available Resources for this API.
