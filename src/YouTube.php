@@ -11,7 +11,7 @@ use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 use CupOfTea\YouTube\Exceptions\ResourceNotFoundException;
 use CupOfTea\YouTube\Contracts\Provider as ProviderContract;
 
-class Provider implements ProviderContract, Serializable {
+class YouTube implements ProviderContract, Serializable {
 
     use Package;
     
