@@ -101,7 +101,6 @@ class YouTube implements ProviderContract, Serializable {
 	 * @param  Request  $request
 	 * @param  string  $clientId
 	 * @param  string  $clientSecret
-	 * @param  string  $redirectUrl
 	 * @param  array   $cfg
 	 * @return void
 	 */
