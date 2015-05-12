@@ -22,13 +22,6 @@ abstract class Resource {
     protected $session;
 
 	/**
-	 * This package's configuration
-	 *
-	 * @var string
-	 */
-	protected $cfg;
-
-	/**
 	 * The access and refresh tokens
 	 *
 	 * @var array
@@ -90,10 +83,9 @@ abstract class Resource {
 	 * @param  Provider    $Provider
 	 * @return void
 	 */
-    public function __construct(Provider &$Provider, $session, $cfg){
+    public function __construct(Provider &$Provider, $session){
         $this->Provider = $Provider;
         
-        $this->cfg = $cfg;
         $this->session = $session;
         $this->tokens = $this->session->get('cupoftea.youtube.tokens', []);
     }
@@ -124,7 +116,7 @@ abstract class Resource {
     protected function getAllParameters($parameters){
         $params = array_replace($this->parameters, $parameters);
         if(!$this->authorised)
-            $params['key'] = $this->cfg['api_key'];
+            $params['key'] = config('youtube.api_key');
         
         return $params;
     }

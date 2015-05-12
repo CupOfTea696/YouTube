@@ -1,4 +1,4 @@
-<?php namespace CupOfTea\YouTube\API\Resource\i18n;
+<?php namespace CupOfTea\YouTube\Resource\i18n;
 
 use CupOfTea\YouTube\Contracts\Provider;
 use CupOfTea\YouTube\Abstraction\Resource;

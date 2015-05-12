@@ -1,4 +1,4 @@
-<?php namespace CupOfTea\YouTube\API;
+<?php namespace CupOfTea\YouTube;
 
 use CupOfTea\YouTube\Absctraction\User as AbstractUser;
 
