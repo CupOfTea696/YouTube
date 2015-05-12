@@ -4,18 +4,20 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CotYtRefreshtokens extends Migration {
+class CotYtRefreshtokens extends Migration
+{
     
     protected $tokenTable;
     protected $userTable;
     protected $userKey;
     
-    public function __construct(){
-        $userModel = Config::get('auth.model');
+    public function __construct()
+    {
+        $userModel = config('auth.model');
         $user = new $userModel;
         
-        $this->tokenTable = Config::get('youtube.table');
-        $this->userTable = Config::get('auth.table');
+        $this->tokenTable = config('youtube.table');
+        $this->userTable = config('auth.table');
         $this->userKey = $user->getKeyName();
     }
     
@@ -30,7 +32,7 @@ class CotYtRefreshtokens extends Migration {
 		{
 			$table->increments('refreshTokenID');
 			$table->string('token', 45);
-            if(Config::get('youtube.integration.youtube_id_as_primary_key'))
+            if(config('youtube.integration.youtube_id_as_primary_key'))
                 $table->string($this->userKey, 24);
             else
                 $table->integer($this->userKey)->unsigned();

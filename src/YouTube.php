@@ -76,6 +76,13 @@ class YouTube implements ProviderContract, Serializable {
 	protected $tokens;
     
 	/**
+	 * The access and refresh tokens
+	 *
+	 * @var \CupOfTea\YouTube\Models\RefreshToken
+	 */
+    protected $refresh_token;
+    
+	/**
 	 * The type of the encoding in the query.
 	 *
 	 * @var int Can be either PHP_QUERY_RFC3986 or PHP_QUERY_RFC1738.
@@ -98,7 +105,7 @@ class YouTube implements ProviderContract, Serializable {
 	 * @param  array   $cfg
 	 * @return void
 	 */
-	public function __construct(Request $request, $clientId, $clientSecret, $cfg)
+	public function __construct(Request $request)
 	{
         $this->input = $request->old() + $request->all();
         $this->session = $request->getSession();
@@ -187,7 +194,8 @@ class YouTube implements ProviderContract, Serializable {
         }
         
         if(config('youtube.integration.enabled') && config('youtube.integration.youtube_id_as_primary_key')){
-            $model = new config('auth.model');
+            $model = config('auth.model');
+            $model = new $model;
             $key = $model->getKeyName();
             
             config(['youtube.map.' . $key => 'youtube.id']);
@@ -201,7 +209,7 @@ class YouTube implements ProviderContract, Serializable {
         if(config('youtube.integration.enabled'))
             return $this->mapUserToModel($user, $userData); // auth.model
         
-		return (new User)->setRaw($user)->map($userData);
+		return (new User)->map($userData)->setRaw($user)->setTokens($this->tokens);
 	}
     
 	/**
@@ -210,7 +218,8 @@ class YouTube implements ProviderContract, Serializable {
 	 * @param  array  $user
 	 * @return \App\User
 	 */
-    protected function mapUserToModel($rawData, $userData){
+    protected function mapUserToModel($rawData, $userData)
+    {
         $model = config('auth.model');
         $user = config('youtube.integration.youtube_id_as_primary_key') ?
             $model::findOrNew($rawData['youtube.id']) :
@@ -219,30 +228,34 @@ class YouTube implements ProviderContract, Serializable {
         $user->isNew = $user->isDirty();
         $user->{config('youtube.integration.raw_property')} = $rawData;
         $user->fill($userData);
-        $user->observe(new AuthModelObserver($this));
-        Log::debug('obsrve');
+        $user->observe(new AuthModelObserver());
         
-        if(config('youtube.integration.auto_update') && $user->isDirty()){
-            
-        Log::debug($user);
-            $user->save();
-        }
-        
-        Log::debug('x');
-        
-        if($user->exists)
-            $this->saveRefreshToken($user);
+        $user->setRelation('refresh_token', $this->refreshToken($user));
+        if (config('youtube.integration.auto_update') && $user->isDirty())
+            $user->push();
         
         return $user;
     }
     
+    protected function refreshToken($user)
+    {
+        if($this->refresh_token)
+            return $this->refresh_token;
+        
+        $this->refresh_token = RefreshToken::firstOrNew([$user->getKeyName() => $user->getKey()]);
+        
+        if ($this->tokens['refresh_token'])
+            $this->refresh_token->token = $this->tokens['refresh_token'];
+        
+        return $this->refresh_token;
+    }
+    
     public function saveRefreshToken($user){
-        if(!$this->tokens['refresh_token'])
+        if (!$this->tokens['refresh_token'])
             return $this;
         
-        $refreshToken = RefreshToken::firstOrNew([$user->getKeyName() => $user->getKey()]);
-        if($refreshToken->isDirty())
-            $refreshToken->fill(['token' => $this->tokens['refresh_token'], $user->getKeyName() => $user->getKey()])->save();
+        if ($this->refreshToken($user)->isDirty() && $this->refresh_token->token)
+            $this->refresh_token->save();
         
         return $this;
     }
