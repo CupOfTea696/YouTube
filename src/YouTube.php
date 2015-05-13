@@ -1,6 +1,5 @@
 <?php namespace CupOfTea\YouTube;
 
-use Log;
 use Auth;
 use Serializable;
 use Illuminate\Http\Request;
@@ -369,10 +368,6 @@ class YouTube implements ProviderContract, Serializable {
 		return implode(' ', $scopes);
 	}
     
-    public function log(){
-        
-    }
-    
 	/**
 	 * {@inheritdoc}
 	 */
@@ -423,8 +418,6 @@ class YouTube implements ProviderContract, Serializable {
 	{
         if($this->hasInvalidState())
 			throw new InvalidStateException;
-        
-        Log::debug($this->getTokenFields($code));
         
 		$response = $this->getHttpClient()->post($this->getTokenUrl(), [
 			'body' => $this->getTokenFields($code),

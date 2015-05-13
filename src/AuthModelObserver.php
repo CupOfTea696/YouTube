@@ -1,5 +1,5 @@
 <?php namespace CupOfTea\YouTube;
-use Log;
+
 class AuthModelObserver
 {
     
@@ -21,7 +21,7 @@ class AuthModelObserver
     public function saved($model)
     {
         $model->isNew = $this->isNew;
-        $model->{config('integration.raw_property')} = $this->rawData;
+        $model->{config('youtube.integration.raw_property')} = $this->rawData;
     }
 
 }

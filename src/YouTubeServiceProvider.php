@@ -1,6 +1,6 @@
 <?php namespace CupOfTea\YouTube;
 
-use CupOfTea\Package\ServiceProvider;
+use Illuminate\Support\ServiceProvider;
 
 class YouTubeServiceProvider extends ServiceProvider {
 
