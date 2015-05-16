@@ -26,7 +26,7 @@ class Channels extends Resource{
     
     public function me($parameters = []){
         $this->authenticated();
-        $parameters['part'] = array_key_exists('part', $parameters) ? $parameters['part'] : 'id,snippet';
+        $this->part(['id', 'snippet']);
         $parameters['mine'] = 'true';
         
         return $this->list($parameters);
