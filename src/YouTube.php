@@ -220,18 +220,26 @@ class YouTube implements ProviderContract, Serializable {
     protected function mapUserToModel($rawData, $userData)
     {
         $model = config('auth.model');
-        $user = config('youtube.integration.youtube_id_as_primary_key') ?
-            $model::findOrNew($rawData['youtube.id']) :
-            $model::firstOrNew([array_search('youtube.id', config('youtube.map')) => $rawData['youtube.id']]);
         
-        $user->isNew = $user->isDirty();
-        $user->{config('youtube.integration.raw_property')} = $rawData;
+        if (config('youtube.integration.youtube_id_as_primary_key')) {
+            $user = $model::findOrNew($rawData['youtube.id']);
+            $user->incrementing = false;
+        } else {
+            $user = $model::firstOrNew([array_search('youtube.id', config('youtube.map')) => $rawData['youtube.id']]);
+        }
+        
+        $new = $user->isDirty();
         $user->fill($userData);
+        $dirty = $user->isDirty();
+        
+        $user->isNew = $new;
+        $user->{config('youtube.integration.raw_property')} = $rawData;
         $user->observe(new AuthModelObserver());
         
         $user->setRelation('refresh_token', $this->refreshToken($user));
-        if (config('youtube.integration.auto_update') && $user->isDirty())
+        if (config('youtube.integration.auto_update') && $dirty) {
             $user->push();
+        }
         
         return $user;
     }
@@ -373,26 +381,21 @@ class YouTube implements ProviderContract, Serializable {
 	 */
 	public function user()
 	{
-        if(!$this->hasValidToken())
+        if (!$this->hasValidToken())
             if(!$this->login())
                 throw new UnauthorisedException();
         
-        $user = [];
-        
-        if(config('youtube.fields.google'))
-            $user = $this->getUserByToken($this->tokens['access_token']);
-        
-        if(config('youtube.fields.youtube'))
+        $user = config('youtube.fields.google') ? $this->getUserByToken($this->tokens['access_token']) : [];
+        if (config('youtube.fields.youtube'))
             $user = array_replace_recursive($user, $this->channel(['fields' => config('youtube.fields.youtube')]));
         
-		$user = $this->mapUser($user);
+        $user = $this->mapUser($user);
         
-        if(config('youtube.integration.enabled') && $user->exists && !Auth::check())
+        if (config('youtube.integration.enabled') && $user->exists && !Auth::check())
             Auth::login($user, true);
         
         // Auth::login resets session, so store this again.
         $this->session->put($this->package('dot') . '.tokens', $this->tokens);
-        
         return $user;
 	}
     
