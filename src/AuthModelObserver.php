@@ -1,5 +1,7 @@
 <?php namespace CupOfTea\YouTube;
 
+use Session;
+
 class AuthModelObserver
 {
     
@@ -11,17 +13,18 @@ class AuthModelObserver
     
     public function saving($model)
     {
-        $this->isNew = $model->isNew;
-        unset($model->isNew);
+        Session::put(YouTube::package('dot') . '.auth_model.meta', [
+            'is_new' => $model->isNew,
+            'raw' => $model->{config('youtube.integration.raw_property')},
+        ]);
         
-        $this->rawData = $model->{config('youtube.integration.raw_property')};
-        unset($model->{config('youtube.integration.raw_property')});
+        unset($model->isNew, $model->{config('youtube.integration.raw_property')});
     }
     
     public function saved($model)
     {
-        $model->isNew = $this->isNew;
-        $model->{config('youtube.integration.raw_property')} = $this->rawData;
+        $model->isNew = Session::pull(YouTube::package('dot') . '.auth_model.meta.is_new');
+        $model->{config('youtube.integration.raw_property')} = Session::pull(YouTube::package('dot') . '.auth_model.meta.raw');
     }
 
 }
