@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "cupoftea/package": "~1.0",
+        "cupoftea/package": "~1.2",
         "php": ">=5.4.0",
         "illuminate/contracts": "~5.0",
         "illuminate/database": "~5.0",
