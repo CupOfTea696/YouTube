@@ -101,7 +101,8 @@ abstract class Resource {
     }
     
     public function part($part){
-        $this->parameters['part'] = is_array($part) ? implode(',', $part) : (string) $part;
+        $add_parts = is_array($part) ? $part : explode(',', str_replace(' ', '', $part));
+        $this->parameters['part'] = array_key_exists('part', $this->parameters) ? array_merge($this->parameters['part'], $add_parts) : $add_parts;
         
         return $this;
     }
@@ -114,11 +115,21 @@ abstract class Resource {
     }
     
     protected function getAllParameters($parameters){
-        $params = array_replace($this->parameters, $parameters);
+        $parameters = array_replace($this->parameters, $parameters);
         if(!$this->authorised)
-            $params['key'] = config('youtube.api_key');
+            $parameters['key'] = config('youtube.api_key');
         
-        return $params;
+        $parts = [];
+        if (array_key_exists('fields', $parameters)) {
+            preg_match_all('/(?:\(|,)([a-zA-Z]+)[^\(,]*(?:\(.*?\))?/', $parameters['fields'], $parts);
+            $parts = $parts[1];
+        }
+        
+        $parts = array_key_exists('part', $parameters) ? array_merge($parameters['part'], $parts) : $parts;
+        if(count($parts))
+            $parameters['part'] = implode(',', $parts);
+        
+        return $parameters;
     }
     
     /**
