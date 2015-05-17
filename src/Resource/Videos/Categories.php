@@ -4,11 +4,11 @@ use CupOfTea\YouTube\Contracts\Provider;
 use CupOfTea\YouTube\Abstraction\Resource;
 use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 
-use CupOfTea\YouTube\Traits\GetMethod;
+use CupOfTea\YouTube\Traits\ListMethod;
 
 class Catefories extends Resource {
     
-    use GetMethod;
+    use ListMethod;
     
     /**
 	 * {@inheritdoc}

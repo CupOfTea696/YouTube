@@ -26,11 +26,11 @@ class Channels extends Resource{
     
     public function me($parameters = []){
         $this->authenticated();
+        $this->parameters = $parameters;
         $this->part(['id', 'snippet']);
-        $parameters['mine'] = 'true';
+        $this->parameters['mine'] = 'true';
         
-        return $this->list($parameters);
+        return $this->list($this->parameters);
     }
-    
     
 }
