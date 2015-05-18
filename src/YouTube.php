@@ -611,21 +611,12 @@ class YouTube implements ProviderContract, Serializable {
     }
     
     /**
-     * Channel
-     *
-     * @alias this.channels.me
-     */
-    public function channel($params){
-        return $this->channels()->me($params);
-    }
-    
-    /**
      * Avatar
      *
      * @alias this.channels.my.avatar
      */
     public function avatar($size, $fallback = true){
-        return $this->channels()->my()->avatar($size, $fallback);
+        return $this->channel()->my()->avatar($size, $fallback);
     }
 
 }
