@@ -23,7 +23,7 @@ class YouTube implements ProviderContract, Serializable {
 	 *
 	 * @var array
 	 */
-	protected $available_resources = ['activities', 'channels', 'guideCategories', 'i18n', 'playlists', 'search', 'subscriptions', 'thumbnails', 'videos', 'watermarks'];
+	protected $available_resources = ['activity', 'channel', 'guideCategory', 'i18n', 'playlist', 'search', 'subscription', 'thumbnail', 'video', 'watermark'];
     
 	/**
 	 * The API's base URL.
