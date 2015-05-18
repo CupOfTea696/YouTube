@@ -6,7 +6,7 @@ use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 
 use CupOfTea\YouTube\Traits\ListMethod, CupOfTea\YouTube\Traits\InsertMethod;
 
-class Activities extends Resource {
+class Activity extends Resource {
     
     use ListMethod, InsertMethod;
     

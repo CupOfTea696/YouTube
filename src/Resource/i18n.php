@@ -14,6 +14,6 @@ class i18n extends Resource{
 	 *
 	 * @var array
 	 */
-	protected $available_subresources = ['languages', 'regions'];
+	protected $available_subresources = ['language', 'region'];
     
 }

@@ -9,7 +9,7 @@ use CupOfTea\YouTube\Traits\ListMethod, CupOfTea\YouTube\Traits\InsertMethod,
     CupOfTea\YouTube\Traits\UpdateMethod, CupOfTea\YouTube\Traits\DeleteMethod,
     CupOfTea\YouTube\Traits\RateMethod, CupOfTea\YouTube\Traits\GetRatingMethod;
 
-class Videos extends Resource {
+class Video extends Resource {
     
     use ListMethod, InsertMethod, UpdateMethod, DeleteMethod, RateMethod, GetRatingMethod,
         HasSubResources;
@@ -19,7 +19,7 @@ class Videos extends Resource {
 	 *
 	 * @var array
 	 */
-	protected $available_subresources = ['categories'];
+	protected $available_subresources = ['category'];
     
     /**
 	 * {@inheritdoc}

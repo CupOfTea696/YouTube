@@ -1,17 +1,19 @@
-<?php namespace CupOfTea\YouTube\Resource\i18n;
+<?php namespace CupOfTea\YouTube\Resource;
 
 use CupOfTea\YouTube\Contracts\Provider;
 use CupOfTea\YouTube\Abstraction\Resource;
 use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 
-use CupOfTea\YouTube\Traits\ListMethod, CupOfTea\YouTube\Traits\InsertMethod;
+use CupOfTea\YouTube\Traits\ListMethod;
 
-class Regions extends Resource {
+class GuideCategory extends Resource {
     
     use ListMethod;
     
     /**
 	 * {@inheritdoc}
 	 */
-    protected $urlSegment = 'i18nRegion ';
+    protected $urlSegment = 'guideCategories';
+    
+    
 }

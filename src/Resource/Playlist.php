@@ -8,7 +8,7 @@ use CupOfTea\YouTube\Traits\HasSubResources;
 use CupOfTea\YouTube\Traits\ListMethod, CupOfTea\YouTube\Traits\InsertMethod,
     CupOfTea\YouTube\Traits\UpdateMethod, CupOfTea\YouTube\Traits\DeleteMethod;
 
-class Playlists extends Resource {
+class Playlist extends Resource {
     
     use ListMethod, InsertMethod, UpdateMethod, DeleteMethod,
         HasSubResources;
@@ -18,7 +18,7 @@ class Playlists extends Resource {
 	 *
 	 * @var array
 	 */
-	protected $available_subresources = ['items'];
+	protected $available_subresources = ['item'];
     
     /**
 	 * {@inheritdoc}

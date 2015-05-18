@@ -7,7 +7,7 @@ use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 
 use CupOfTea\YouTube\Traits\ListMethod, CupOfTea\YouTube\Traits\UpdateMethod;
 
-class Channels extends Resource{
+class Channel extends Resource{
     
     use ListMethod, UpdateMethod,
         HasSubResources;
@@ -17,7 +17,7 @@ class Channels extends Resource{
 	 *
 	 * @var array
 	 */
-	protected $available_subresources = ['banners', 'sections'];
+	protected $available_subresources = ['banner', 'section'];
     
     /**
 	 * {@inheritdoc}
@@ -26,7 +26,7 @@ class Channels extends Resource{
     
     public function me($parameters = []){
         $this->authenticated();
-        $this->parameters = $parameters;
+        $this->parameters = array_replace($this->parameters, $parameters);
         $this->part(['id', 'snippet']);
         $this->parameters['mine'] = 'true';
         

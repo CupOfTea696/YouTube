@@ -144,9 +144,8 @@ abstract class Resource {
 	 */
 	public function __call($method, $args){
         $this->beforeMethod($method);
-        $parameters = &$args[0];
         
-        $parameters = $this->getAllParameters($parameters);
+        $args[0] = $this->getAllParameters($args[0]);
         array_unshift(
             $args,
             $this->getHttpClient(),

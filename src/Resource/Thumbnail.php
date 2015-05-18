@@ -6,7 +6,7 @@ use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 
 use CupOfTea\YouTube\Traits\SetMethod;
 
-class Thumbnails extends Resource {
+class Thumbnail extends Resource {
     
     use SetMethod;
     

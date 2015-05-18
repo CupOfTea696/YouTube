@@ -1,19 +1,17 @@
-<?php namespace CupOfTea\YouTube\Resource\Videos;
+<?php namespace CupOfTea\YouTube\Resource\i18n;
 
 use CupOfTea\YouTube\Contracts\Provider;
 use CupOfTea\YouTube\Abstraction\Resource;
 use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 
-use CupOfTea\YouTube\Traits\ListMethod;
+use CupOfTea\YouTube\Traits\ListMethod, CupOfTea\YouTube\Traits\InsertMethod;
 
-class Catefories extends Resource {
+class Language extends Resource {
     
     use ListMethod;
     
     /**
 	 * {@inheritdoc}
 	 */
-    protected $urlSegment = 'videoCategories';
-    
-    
+    protected $urlSegment = 'i18nLanguages';
 }

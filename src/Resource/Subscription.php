@@ -7,7 +7,7 @@ use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 use CupOfTea\YouTube\Traits\ListMethod, CupOfTea\YouTube\Traits\InsertMethod,
     CupOfTea\YouTube\Traits\DeleteMethod;
 
-class Subscriptions extends Resource {
+class Subscription extends Resource {
     
     use ListMethod, InsertMethod, DeleteMethod;
     
@@ -18,7 +18,7 @@ class Subscriptions extends Resource {
     
     public function mine($parameters = []){
         $this->authenticated();
-        $this->parameters = $parameters;
+        $this->parameters = array_replace($this->parameters, $parameters);
         $this->part(['id', 'snippet']);
         $this->parameters['mine'] = 'true';
         

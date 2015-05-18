@@ -6,12 +6,12 @@ use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 
 use CupOfTea\YouTube\Traits\ListMethod, CupOfTea\YouTube\Traits\InsertMethod;
 
-class Languages extends Resource {
+class Region extends Resource {
     
     use ListMethod;
     
     /**
 	 * {@inheritdoc}
 	 */
-    protected $urlSegment = 'i18nLanguages';
+    protected $urlSegment = 'i18nRegion ';
 }

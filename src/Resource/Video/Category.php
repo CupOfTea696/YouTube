@@ -1,19 +1,19 @@
-<?php namespace CupOfTea\YouTube\Resource\Channels;
+<?php namespace CupOfTea\YouTube\Resource\Video;
 
 use CupOfTea\YouTube\Contracts\Provider;
 use CupOfTea\YouTube\Abstraction\Resource;
 use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 
-use CupOfTea\YouTube\Traits\InsertMethod;
+use CupOfTea\YouTube\Traits\ListMethod;
 
-class Banners extends Resource {
+class Catefory extends Resource {
     
-    use InsertMethod;
+    use ListMethod;
     
     /**
 	 * {@inheritdoc}
 	 */
-    protected $urlSegment = 'channelBanners';
+    protected $urlSegment = 'videoCategories';
     
     
 }

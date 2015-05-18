@@ -493,7 +493,7 @@ class YouTube implements ProviderContract, Serializable {
 		return [
             'expires_in' => $json['expires_in'],
             'access_token' => $json['access_token'],
-            'refresh_token' => array_get($json, 'refresh_token', array_key_exists('refresh_token',$this->tokens) ? $this->tokens['refresh_token'] : false),
+            'refresh_token' => array_get($json, 'refresh_token', array_get('refresh_token', $this->tokens, false)),
             'expires' => time() + $json['expires_in'] - 5,
         ];
 	}

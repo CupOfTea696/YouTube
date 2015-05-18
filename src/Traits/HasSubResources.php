@@ -30,11 +30,11 @@ trait HasSubResources {
     public function __call($resource_method, $args){
         $resource = strtolower($resource_method);
         if(in_array($resource, $this->available_subresources)){
-            if($instance = in_array($resource, $this->resources))
+            if($instance = in_array($resource, $this->subresources))
                 return $instance;
             
             $instance = __CLASS__ . '\\' . ucfirst($resource);
-            return $this->subresources[$resource] = new $instance($this);
+            return $this->subresources[$resource] = new $instance($this->Provider, $this->session);
         }
         
         $method = $resource_method;
