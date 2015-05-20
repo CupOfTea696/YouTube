@@ -34,7 +34,7 @@ trait HasSubResources {
                 return $instance;
             
             $instance = __CLASS__ . '\\' . ucfirst($resource);
-            return $this->subresources[$resource] = new $instance($this->Provider, $this->session);
+            return $this->subresources[$resource] = new $instance($this->Provider);
         }
         
         $method = $resource_method;

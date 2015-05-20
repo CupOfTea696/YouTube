@@ -15,13 +15,6 @@ abstract class Resource {
 	protected $Provider;
 
 	/**
-	 * The Session instance.
-	 *
-	 * @var Session
-	 */
-    protected $session;
-
-	/**
 	 * The access and refresh tokens
 	 *
 	 * @var array
@@ -83,11 +76,9 @@ abstract class Resource {
 	 * @param  Provider    $Provider
 	 * @return void
 	 */
-    public function __construct(Provider &$Provider, $session){
+    public function __construct(Provider &$Provider){
         $this->Provider = $Provider;
-        
-        $this->session = $session;
-        $this->tokens = $this->session->get('cupoftea.youtube.tokens', []);
+        $this->tokens = $this->Provider->getTokens();
     }
     
     protected function getHttpClient(){
@@ -102,6 +93,8 @@ abstract class Resource {
     
     public function part($part){
         $add_parts = is_array($part) ? $part : explode(',', str_replace(' ', '', $part));
+        if (array_key_exists('part', $this->parameters) && !is_array($this->parameters['part']))
+            $this->parameters['part'] = explode(',', str_replace(' ', '', $this->parameters['part']));
         $this->parameters['part'] = array_key_exists('part', $this->parameters) ? array_merge($this->parameters['part'], $add_parts) : $add_parts;
         
         return $this;
@@ -119,15 +112,26 @@ abstract class Resource {
         if(!$this->authorised)
             $parameters['key'] = config('youtube.api_key');
         
-        $parts = [];
         if (array_key_exists('fields', $parameters)) {
-            preg_match_all('/(?:\(|,)([a-zA-Z]+)[^\(,]*(?:\(.*?\))?/', $parameters['fields'], $parts);
-            $parts = $parts[1];
+            $fields = $parameters['fields'];
+            
+            // dat regex tho
+            $fields = preg_replace('/\(([^\(]*)/', ':{$1', $fields);
+            $fields = preg_replace('/\)/', '}', $fields);
+            while (preg_match('/\/([^\{\},]*)(?:(\{.*?\})?(,|$)|(\}))/', $fields)) {
+                $fields = preg_replace('/\/([^\{\},]*)(?:(\{.*?\})?(,|$)|(\}))/', ':{$1$2}$3$4', $fields);
+            }
+            
+            $fields = preg_replace('/(?<=[^:\w])(\w+)(?=[^:\w])/', '$1:""', $fields);
+            $fields = preg_replace('/(\w+)/', '"$1"', $fields);
+            $fields = '{' . $fields . '}';
+            $fields = json_decode($fields, true);
+            
+            $parameters['part'] = array_keys($fields['items']);
         }
         
-        $parts = array_key_exists('part', $parameters) ? array_merge($parameters['part'], $parts) : $parts;
-        if(count($parts))
-            $parameters['part'] = implode(',', $parts);
+        if(count($parameters['part']))
+            $parameters['part'] = implode(',', $parameters['part']);
         
         return $parameters;
     }
