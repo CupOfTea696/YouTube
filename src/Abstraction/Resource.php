@@ -78,7 +78,6 @@ abstract class Resource {
 	 */
     public function __construct(Provider &$Provider){
         $this->Provider = $Provider;
-        $this->tokens = $this->Provider->getTokens();
     }
     
     protected function getHttpClient(){
@@ -149,12 +148,13 @@ abstract class Resource {
 	public function __call($method, $args){
         $this->beforeMethod($method);
         
+        $tokens = $this->Provider->getTokens();
         $args[0] = $this->getAllParameters($args[0]);
         array_unshift(
             $args,
             $this->getHttpClient(),
             $this->urlSegment,
-            $this->authorised ? $this->tokens['access_token'] : '',
+            $this->authorised ? $tokens['access_token'] : '',
             [$this, 'apiErrorHandler']
         );
         

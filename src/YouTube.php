@@ -106,12 +106,19 @@ class YouTube implements ProviderContract, Serializable {
 	 */
 	public function __construct(Request $request)
 	{
-        $this->input = $request->old() + $request->all();
-        $this->session = $request->getSession();
+        try{
+            $this->input = $request->old() + $request->all();
+            $this->session = $request->getSession();
+        } catch (\Exception $e) {
+            $this->input = $request->all();
+            $this->session = false;
+        }
         
 		$this->clientId = config('services.google.client_id');
 		$this->clientSecret = config('services.google.client_secret');
-        $this->tokens = $this->session->get($this->package('dot') . '.tokens', []);
+        
+        if ($this->session)
+            $this->tokens = $this->session->get($this->package('dot') . '.tokens', []);
         
         if(config('youtube.integration.enabled') && !$this->tokens && Auth::check())
             $this->getRefreshTokenByUser(Auth::user());
@@ -275,6 +282,9 @@ class YouTube implements ProviderContract, Serializable {
 	 */
 	public function redirect()
 	{
+        if (!$this->session)
+            throw new \Exception('Method only available on HTTP Requests.');
+        
 		$this->session->put(
 			$this->package('dot') . '.state', $state = sha1(time().$this->session->get('_token'))
 		);
@@ -288,6 +298,9 @@ class YouTube implements ProviderContract, Serializable {
 	 * @return CupOfTea\YouTube\Contracts\Provider
 	 */
     public function login(){
+        if(!$this->session)
+            throw new \Exception('Method only available on HTTP Requests.');
+        
         if($code = $this->getCode()) {
             return $this->getTokensByCode($code);
         }
@@ -341,6 +354,7 @@ class YouTube implements ProviderContract, Serializable {
 	 * @return CupOfTea\YouTube\Contracts\Provider
 	 */
     protected function refresh(){
+        \Log::debug(['authmehgjshd', array_get($this->tokens, 'refresh_token')]);
         if(array_get($this->tokens, 'refresh_token'))
             return $this->getTokensByRefresh();
     }
@@ -396,7 +410,9 @@ class YouTube implements ProviderContract, Serializable {
             Auth::login($user, true);
         
         // Auth::login resets session, so store this again.
-        $this->session->put($this->package('dot') . '.tokens', $this->tokens);
+        if ($this->session)
+            $this->session->put($this->package('dot') . '.tokens', $this->tokens);
+        
         return $user;
 	}
     
@@ -459,6 +475,7 @@ class YouTube implements ProviderContract, Serializable {
 			'body' => $this->getRefreshFields(),
 		]);
         $this->tokens = $this->parseTokens($response->getBody());
+        
         if($this->session)
             $this->session->put($this->package('dot') . '.tokens', $this->tokens);
         
@@ -483,9 +500,28 @@ class YouTube implements ProviderContract, Serializable {
         return $this->tokens;
     }
     
-    public function setTokens()
+    public function setTokens($tokens)
     {
+        if ($refresh_token = array_get($tokens, 'refresh_token')) {
+            $this->tokens['refresh_token'] = $refresh_token;
+        }
         
+        if ($access_token = array_get($tokens, 'access_token')) {
+            $this->tokens['access_token'] = $access_token;
+        }
+        
+        if ($expires_in = array_get($tokens, 'expires_in') || $expires = array_get($tokens, 'expires')) {
+            if ($expires_in) {
+                $this->tokens['expires_in'] = $expires_in;
+            }
+            if (!$expires) {
+                $this->tokens['expires'] = time() + $this->tokens['expires_in'] - 5;
+            } else {
+                $this->tokens['expires'] = $expires;
+            }
+        }
+        
+        return $this;
     }
     
 	/**
@@ -585,8 +621,6 @@ class YouTube implements ProviderContract, Serializable {
     
     public function serialize(){
         return serialize([
-            //'input' => $this->input,
-            //'session' => $this->session,
             'tokens' => $this->tokens,
         ]);
     }
@@ -594,8 +628,6 @@ class YouTube implements ProviderContract, Serializable {
     public function unserialize($data){
         $array = unserialize($data);
         
-        //$this->input = $array['input'];
-        //$this->session = $array['session'];
         $this->clientId = config('services.google.client_id');
         $this->clientSecret = config('services.google.client_secret');
         $this->tokens = $array['tokens'];
