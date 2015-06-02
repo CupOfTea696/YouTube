@@ -289,7 +289,7 @@ class YouTube implements ProviderContract, Serializable {
 			$this->package('dot') . '.state', $state = sha1(time().$this->session->get('_token'))
 		);
         
-		return new RedirectResponse($this->getAuthUrl($state) . '&login_hint=UC0T7EniXcxHNGnUoOCLAcSw');
+		return new RedirectResponse($this->getAuthUrl($state));
 	}
     
     /**
@@ -397,7 +397,7 @@ class YouTube implements ProviderContract, Serializable {
 	public function user($additionalData = [])
 	{
         if (!$this->hasValidToken())
-            if(!$this->login())
+            if (!$this->login())
                 throw new UnauthorisedException();
         
         $user = config('youtube.fields.google') ? $this->getUserByToken($this->tokens['access_token']) : [];
