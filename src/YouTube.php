@@ -1,7 +1,6 @@
 <?php namespace CupOfTea\YouTube;
 
 use Auth;
-use Event;
 use Serializable;
 
 use Illuminate\Http\Request;
@@ -20,7 +19,7 @@ class YouTube implements ProviderContract, Serializable {
     use Package;
     
     const PACKAGE = 'CupOfTea/YouTube';
-    const VERSION = '0.5.9-beta';
+    const VERSION = '0.5.10-beta';
     
 	/**
 	 * Available Resources for this API.

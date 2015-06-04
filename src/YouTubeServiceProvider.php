@@ -1,5 +1,7 @@
 <?php namespace CupOfTea\YouTube;
 
+use Event;
+
 use Illuminate\Support\ServiceProvider;
 
 use CupOfTea\YouTube\Handlers\Events\RemoveTokensFromSession;
