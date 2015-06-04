@@ -1,22 +1,26 @@
 <?php namespace CupOfTea\YouTube;
 
 use Auth;
+use Event;
 use Serializable;
+
 use Illuminate\Http\Request;
+
 use CupOfTea\Package\Package;
 use CupOfTea\YouTube\Models\RefreshToken;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use CupOfTea\YouTube\Exceptions\InvalidStateException;
 use CupOfTea\YouTube\Exceptions\UnauthorisedException;
 use CupOfTea\YouTube\Exceptions\ResourceNotFoundException;
 use CupOfTea\YouTube\Contracts\Provider as ProviderContract;
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class YouTube implements ProviderContract, Serializable {
 
     use Package;
     
     const PACKAGE = 'CupOfTea/YouTube';
-    const VERSION = '0.5.8-beta';
+    const VERSION = '0.5.9-beta';
     
 	/**
 	 * Available Resources for this API.
