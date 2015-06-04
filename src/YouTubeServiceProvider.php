@@ -2,6 +2,8 @@
 
 use Illuminate\Support\ServiceProvider;
 
+use CupOfTea\YouTube\Handlers\Events\RemoveTokensFromSession;
+
 class YouTubeServiceProvider extends ServiceProvider {
     
 	/**
@@ -24,8 +26,10 @@ class YouTubeServiceProvider extends ServiceProvider {
         $this->publishes([
             __DIR__.'/../database/migrations/' => base_path('/database/migrations')
         ], 'migrations');
+        
+        Event::listen('auth.logout', RemoveTokensFromSession::class);
     }
-
+    
 	/**
 	 * Register the service provider.
 	 *
@@ -45,7 +49,7 @@ class YouTubeServiceProvider extends ServiceProvider {
 			return new YouTube($this->app['request']);
 		});
 	}
-
+    
 	/**
 	 * Get the services provided by the provider.
 	 *
@@ -55,5 +59,5 @@ class YouTubeServiceProvider extends ServiceProvider {
 	{
 		return ['CupOfTea\YouTube\Contracts\Factory'];
 	}
-
+    
 }
