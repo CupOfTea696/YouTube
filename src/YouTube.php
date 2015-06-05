@@ -19,7 +19,7 @@ class YouTube implements ProviderContract, Serializable {
     use Package;
     
     const PACKAGE = 'CupOfTea/YouTube';
-    const VERSION = '0.5.10-beta';
+    const VERSION = '0.5.11-beta';
     
 	/**
 	 * Available Resources for this API.
@@ -357,7 +357,6 @@ class YouTube implements ProviderContract, Serializable {
 	 * @return CupOfTea\YouTube\Contracts\Provider
 	 */
     protected function refresh(){
-        \Log::debug(['authmehgjshd', array_get($this->tokens, 'refresh_token')]);
         if(array_get($this->tokens, 'refresh_token'))
             return $this->getTokensByRefresh();
     }
