@@ -3,7 +3,7 @@
 use Session;
 use CupOfTea\YouTube\YouTube;
 
-class UpdateUserLastSeenAt {
+class RemoveTokensFromSession {
     
 	/**
 	 * Create the event handler.
