@@ -98,6 +98,8 @@ class YouTube implements ProviderContract, Serializable {
 	 */
 	protected $prompt = false;
     
+    protected $service = false;
+    
 	/**
 	 * Create a new provider instance.
 	 *
@@ -154,7 +156,7 @@ class YouTube implements ProviderContract, Serializable {
 	 */
 	protected function getTokenUrl()
 	{
-		return '/oauth2/v3/token';
+		return 'https://accounts.google.com/o/oauth2/token';
 	}
     
 	/**
@@ -289,7 +291,7 @@ class YouTube implements ProviderContract, Serializable {
             throw new \Exception('Method only available on HTTP Requests.');
         
 		$this->session->put(
-			$this->package('dot') . '.state', $state = sha1(time().$this->session->get('_token'))
+			$this->package('dot') . '.state', $state = sha1(time() . $this->session->get('_token'))
 		);
         
 		return new RedirectResponse($this->getAuthUrl($state));
@@ -412,7 +414,7 @@ class YouTube implements ProviderContract, Serializable {
             Auth::login($user, true);
         
         // Auth::login resets session, so store this again.
-        if ($this->session)
+        if ($this->session && !$this->service)
             $this->session->put($this->package('dot') . '.tokens', $this->tokens);
         
         return $user;
@@ -445,7 +447,10 @@ class YouTube implements ProviderContract, Serializable {
 			'body' => $this->getTokenFields($code),
 		]);
         $this->tokens = $this->parseTokens($response->getBody());
-        $this->session->put($this->package('dot') . '.tokens', $this->tokens);
+        
+        if (!$this->service) {
+            $this->session->put($this->package('dot') . '.tokens', $this->tokens);
+        }
         
         return $this;
 	}
@@ -473,12 +478,16 @@ class YouTube implements ProviderContract, Serializable {
 	 */
 	protected function getTokensByRefresh()
 	{
+        try {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
 			'body' => $this->getRefreshFields(),
 		]);
         $this->tokens = $this->parseTokens($response->getBody());
+        } catch(\Exception $e) {
+            dd([$this->getTokenUrl(), $e->getRequest(), $e->getResponse()->getBody()->getContents()]);
+        }
         
-        if($this->session)
+        if($this->session && !$this->service)
             $this->session->put($this->package('dot') . '.tokens', $this->tokens);
         
         return $this;
@@ -493,7 +502,7 @@ class YouTube implements ProviderContract, Serializable {
 	{
 		return [
 			'client_id' => $this->clientId, 'client_secret' => $this->clientSecret,
-			'refresh_token' => $this->tokens['refresh_token'], 'redirect_uri' => config('youtube.redirect_url'),
+			'refresh_token' => $this->tokens['refresh_token'],
             'grant_type' => 'refresh_token',
 		];
 	}
@@ -603,6 +612,11 @@ class YouTube implements ProviderContract, Serializable {
 		return $this;
 	}
     
+    public function service($service = true)
+    {
+        return clone $this;
+    }
+    
     /**
 	 * Get a Resource.
 	 *
@@ -618,7 +632,12 @@ class YouTube implements ProviderContract, Serializable {
             return $instance;
         
         $instance = __NAMESPACE__ . '\\Resource\\' . ucfirst($resource);
-        return $this->resources[$resource] = new $instance($this, $this->session);
+        return $this->resources[$resource] = new $instance($this);
+    }
+    
+    public function __clone()
+    {
+        $this->service = true;
     }
     
     public function serialize(){
@@ -657,5 +676,5 @@ class YouTube implements ProviderContract, Serializable {
     public function avatar($size, $fallback = true){
         return $this->channel()->my()->avatar($size, $fallback);
     }
-
+    
 }

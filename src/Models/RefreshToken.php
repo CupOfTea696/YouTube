@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model;
 
 class RefreshToken extends Model{
-    protected $primaryKey = 'refreshTokenID';
     
     protected $table;
     protected $fillable;
@@ -23,6 +22,6 @@ class RefreshToken extends Model{
     }
     
     public function user(){
-        return $this->hasOne(('\\' . Config::get('auth.model')), $this->userKey, $this->userKey);
+        return $this->hasOne(('\\' . Config::get('auth.model')), $this->userKey, 'user_id');
     }
 }

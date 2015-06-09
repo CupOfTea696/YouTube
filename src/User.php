@@ -2,8 +2,9 @@
 
 use CupOfTea\YouTube\Absctraction\User as AbstractUser;
 
-class User extends AbstractUser {
-
+class User extends AbstractUser
+{
+    
 	/**
 	 * The user's access token.
 	 *
@@ -24,7 +25,7 @@ class User extends AbstractUser {
 	 * @var int $time
 	 */
     public $expires;
-
+    
 	/**
 	 * Set the tokens on the user.
 	 *
@@ -36,8 +37,8 @@ class User extends AbstractUser {
 		$this->access_token = $tokens['access_token'];
         $this->refresh_token = $tokens['refresh_token'];
         $this->expires = $tokens['expires'];
-
+        
 		return $this;
 	}
-
+    
 }

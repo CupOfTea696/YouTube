@@ -30,14 +30,15 @@ class CotYtRefreshtokens extends Migration
 	{
         Schema::create($this->tokenTable, function(Blueprint $table)
 		{
-			$table->increments('refreshTokenID');
+			$table->increments('id');
 			$table->string('token', 45);
             if(config('youtube.integration.youtube_id_as_primary_key'))
-                $table->string($this->userKey, 24);
+                $table->string('user_id', 24);
             else
-                $table->integer($this->userKey)->unsigned();
-			$table->foreign($this->userKey)
+                $table->integer('user_id')->unsigned();
+			$table->foreign('user_id')
                   ->references($this->userKey)->on($this->userTable)
+                  ->onUpdate('cascade')
                   ->onDelete('cascade');
 		});
 	}
