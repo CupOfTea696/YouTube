@@ -19,7 +19,7 @@ class YouTube implements ProviderContract, Serializable {
     use Package;
     
     const PACKAGE = 'CupOfTea/YouTube';
-    const VERSION = '0.5.13-beta';
+    const VERSION = '0.6.0-beta';
     
 	/**
 	 * Available Resources for this API.
