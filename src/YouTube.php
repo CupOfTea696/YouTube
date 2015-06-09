@@ -181,7 +181,7 @@ class YouTube implements ProviderContract, Serializable {
 	}
     
     protected function getRefreshTokenByUser($user){
-        $this->tokens['refresh_token'] = RefreshToken::where($user->getKeyName(), $user->getKey())->first()->token;
+        $this->tokens['refresh_token'] = RefreshToken::where('user_id', $user->getKey())->first()->token;
     }
     
 	/**
@@ -262,7 +262,7 @@ class YouTube implements ProviderContract, Serializable {
         if($this->refresh_token)
             return $this->refresh_token;
         
-        $this->refresh_token = RefreshToken::firstOrNew([$user->getKeyName() => $user->getKey()]);
+        $this->refresh_token = RefreshToken::firstOrNew(['user_id' => $user->getKey()]);
         
         if ($this->tokens['refresh_token'])
             $this->refresh_token->token = $this->tokens['refresh_token'];
