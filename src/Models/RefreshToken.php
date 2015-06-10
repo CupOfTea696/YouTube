@@ -16,12 +16,12 @@ class RefreshToken extends Model{
         
         $this->userKey = (new $model)->getKeyName();
         $this->table = Config::get('youtube.table');
-        $this->fillable = ['token', $this->userKey];
+        $this->fillable = ['token', 'user_id'];
         
         parent::__construct($attributes);
     }
     
     public function user(){
-        return $this->hasOne(('\\' . Config::get('auth.model')), $this->userKey, 'user_id');
+        return $this->belongsTo(('\\' . Config::get('auth.model')), $this->userKey, 'user_id');
     }
 }
