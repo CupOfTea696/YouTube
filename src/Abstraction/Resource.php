@@ -121,7 +121,7 @@ abstract class Resource {
                 $fields = preg_replace('/\/([^\{\},]*)(?:(\{.*?\})?(,|$)|(\}))/', ':{$1$2}$3$4', $fields);
             }
             
-            $fields = preg_replace('/(?<=[^:\w])(\w+)(?=[^:\w])/', '$1:""', $fields);
+            $fields = preg_replace('/(?<=[^:\w]|^)(\w+)(?=[^:\w]|$)/', '$1:""', $fields);
             $fields = preg_replace('/(\w+)/', '"$1"', $fields);
             $fields = '{' . $fields . '}';
             $fields = json_decode($fields, true);
