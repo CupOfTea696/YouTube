@@ -2,7 +2,7 @@
 
 trait SetMethod{
     protected function _set(\GuzzleHttp\Client $httpClient, $url, $token, $apiErrorHandler, $parameters = []){
-        $headers = $token ? ['Authorization' => 'Bearer ' . $token] : 
+        $headers = $token ? ['Authorization' => 'Bearer ' . $token] : [];
         
         try{
             $response = $httpClient->post($url, [

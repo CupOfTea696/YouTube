@@ -1,7 +1,7 @@
 <?php namespace CupOfTea\YouTube\Abstraction;
 
 use ArrayAccess;
-use CupOfTea\YouTube\Contracts\User as UserContract
+use CupOfTea\YouTube\Contracts\User as UserContract;
 
 abstract class User implements ArrayAccess, UserContract {
 
