@@ -6,7 +6,6 @@ use Illuminate\Database\Migrations\Migration;
 
 class CotYtRefreshtokens extends Migration
 {
-    
     protected $tokenTable;
     protected $userTable;
     protected $userKey;
@@ -21,36 +20,35 @@ class CotYtRefreshtokens extends Migration
         $this->userKey = $user->getKeyName();
     }
     
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-        Schema::create($this->tokenTable, function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->string('token', 45);
-            if(config('youtube.integration.youtube_id_as_primary_key'))
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create($this->tokenTable, function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('token', 45);
+            if (config('youtube.integration.youtube_id_as_primary_key')) {
                 $table->string('user_id', 24);
-            else
+            } else {
                 $table->integer('user_id')->unsigned();
-			$table->foreign('user_id')
+            }
+            $table->foreign('user_id')
                   ->references($this->userKey)->on($this->userTable)
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
-		});
-	}
+        });
+    }
     
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::drop($this->tokenTable);
-	}
-    
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop($this->tokenTable);
+    }
 }

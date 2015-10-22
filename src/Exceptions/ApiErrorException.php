@@ -1,3 +1,5 @@
 <?php namespace CupOfTea\YouTube\Exceptions;
 
-class ApiErrorException extends \Exception{}
+class ApiErrorException extends \Exception
+{
+}

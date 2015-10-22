@@ -1,17 +1,15 @@
 <?php namespace CupOfTea\YouTube\Resource;
 
-use CupOfTea\YouTube\Contracts\Provider;
 use CupOfTea\YouTube\Abstraction\Resource;
-use CupOfTea\YouTube\Exceptions\UnauthorisedException;
+use CupOfTea\YouTube\Traits\ListMethod;
+use CupOfTea\YouTube\Traits\InsertMethod;
 
-use CupOfTea\YouTube\Traits\ListMethod, CupOfTea\YouTube\Traits\InsertMethod;
-
-class Activity extends Resource {
-    
+class Activity extends Resource
+{
     use ListMethod, InsertMethod;
     
     /**
-	 * {@inheritdoc}
-	 */
+     * {@inheritdoc}
+     */
     protected $urlSegment = 'activities';
 }

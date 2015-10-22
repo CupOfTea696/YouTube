@@ -1,3 +1,5 @@
 <?php namespace CupOfTea\YouTube\Exceptions;
 
-class InvalidStateException extends \InvalidArgumentException {}
+class InvalidStateException extends \InvalidArgumentException
+{
+}

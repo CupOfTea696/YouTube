@@ -2,38 +2,38 @@
 
 return [
     
-	/**
-	 *--------------------------------------------------------------------------
-	 * YouTube API key
-	 *--------------------------------------------------------------------------
-	 *
-	 * Your API key for unauthorised API requests.
+    /*
+     *--------------------------------------------------------------------------
+     * YouTube API key
+     *--------------------------------------------------------------------------
+     *
+     * Your API key for unauthorised API requests.
      *
      * @required
      * @default ''
-	 *
-	 */
-	'api_key' => 'YOUR_KEY_HERE',
+     *
+     */
+    'api_key' => 'YOUR_KEY_HERE',
     
-	/**
-	 *--------------------------------------------------------------------------
-	 * Redirect URL
-	 *--------------------------------------------------------------------------
-	 *
-	 * URL the Google User login & consent screen should redirect to.
+    /*
+     *--------------------------------------------------------------------------
+     * Redirect URL
+     *--------------------------------------------------------------------------
+     *
+     * URL the Google User login & consent screen should redirect to.
      *
      * @required
      * @default ''
-	 *
-	 */
+     *
+     */
     'redirect_url' => 'YOUR_REDIRECT_URL_HERE',
     
-	/**
-	 *--------------------------------------------------------------------------
-	 * @TODO Automatic Login
-	 *--------------------------------------------------------------------------
-	 *
-	 * Wether or not this Package should try and login the user when he isn't authenticated.
+    /*
+     *--------------------------------------------------------------------------
+     * @TODO Automatic Login
+     *--------------------------------------------------------------------------
+     *
+     * Wether or not this Package should try and login the user when he isn't authenticated.
      * This happens by first checking if an authentication token is set, and automatically request the additional permissions nessesary to proceed.
      * Next it will check if there is a code available in the request to obtain an authentication token.
      * If not, the Package will redirect the user to the Google Authentication screen.
@@ -43,55 +43,55 @@ return [
      *  please use the provider methods to achieve this.
      *
      * @default false
-	 *
-	 */
+     *
+     */
     'auto_login' => false,
     
-	/**
-	 *--------------------------------------------------------------------------
-	 * Scopes
-	 *--------------------------------------------------------------------------
-	 *
-	 * The scopes being requested.
+    /*
+     *--------------------------------------------------------------------------
+     * Scopes
+     *--------------------------------------------------------------------------
+     *
+     * The scopes being requested.
      * @default [
      *    'https://www.googleapis.com/auth/plus.me',
      *    'https://www.googleapis.com/auth/plus.login',
      *    'https://www.googleapis.com/auth/plus.profile.emails.read',
      *    'https://www.googleapis.com/auth/youtube',
      * ]
-	 *
+     *
      */
     
     'scopes' => [
         'https://www.googleapis.com/auth/plus.me',
-		'https://www.googleapis.com/auth/plus.login',
-		'https://www.googleapis.com/auth/plus.profile.emails.read',
+        'https://www.googleapis.com/auth/plus.login',
+        'https://www.googleapis.com/auth/plus.profile.emails.read',
         'https://www.googleapis.com/auth/youtube',
     ],
     
-	/**
-	 *--------------------------------------------------------------------------
-	 * Access Type
-	 *--------------------------------------------------------------------------
-	 *
-	 * The access type being requested.
+    /*
+     *--------------------------------------------------------------------------
+     * Access Type
+     *--------------------------------------------------------------------------
+     *
+     * The access type being requested.
      * @default 'Offline'
-	 *
-	 */
+     *
+     */
     
     'access_type' => 'offline',
     
-	/**
-	 *--------------------------------------------------------------------------
-	 * Fields
-	 *--------------------------------------------------------------------------
-	 *
-	 * Fields that should be retrieved for the YouTube::user() method.
-	 *
-	 */
+    /*
+     *--------------------------------------------------------------------------
+     * Fields
+     *--------------------------------------------------------------------------
+     *
+     * Fields that should be retrieved for the YouTube::user() method.
+     *
+     */
     
     'fields' => [
-        /**
+        /*
          *--------------------------------------------------------------------------
          * Google
          *--------------------------------------------------------------------------
@@ -111,7 +111,7 @@ return [
          */
         'google' => false,
         
-        /**
+        /*
          *--------------------------------------------------------------------------
          * YouTube
          *--------------------------------------------------------------------------
@@ -128,12 +128,12 @@ return [
         'youtube' => 'items(id,snippet(title,thumbnails(default,medium)))',
     ],
     
-	/**
-	 *--------------------------------------------------------------------------
-	 * Map
-	 *--------------------------------------------------------------------------
-	 *
-	 * How the API data will be mapped to the User Model or User Object
+    /*
+     *--------------------------------------------------------------------------
+     * Map
+     *--------------------------------------------------------------------------
+     *
+     * How the API data will be mapped to the User Model or User Object
      * Will map to User Model when Integration is Enabled (see below)
      * If Use YouTube ID as Primary Key is Enabled below, you don't need to map the youtube.id value
      * @TODO: The property youtube.snippet.thumbnails will automatically fall back a to smaller size if the size requested isn't present.
@@ -145,8 +145,8 @@ return [
      *     'email' => 'google.emails.0.value',
      *     'avatar' => 'youtube.snippet.thumbnails.medium.url',
      * ]
-	 *
-	 */
+     *
+     */
     
     'map' => [
         'youtubeId' => 'youtube.id',
@@ -154,30 +154,30 @@ return [
         'avatar' => 'youtube.snippet.thumbnails.medium.url',
     ],
     
-	/**
-	 *--------------------------------------------------------------------------
-	 * Table
-	 *--------------------------------------------------------------------------
-	 *
-	 * Database table name to store refresh tokens.
+    /*
+     *--------------------------------------------------------------------------
+     * Table
+     *--------------------------------------------------------------------------
+     *
+     * Database table name to store refresh tokens.
      *
      * @default 'RefreshTokens'
-	 *
-	 */
+     *
+     */
     
     'table' => 'RefreshTokens',
     
-    /**
-	 *--------------------------------------------------------------------------
-	 * Integration Settings
-	 *--------------------------------------------------------------------------
-	 *
-	 * Settings for auth integration
-	 *
-	 */
+    /*
+     *--------------------------------------------------------------------------
+     * Integration Settings
+     *--------------------------------------------------------------------------
+     *
+     * Settings for auth integration
+     *
+     */
     
     'integration' => [
-        /**
+        /*
          *--------------------------------------------------------------------------
          * Enable Integration
          *--------------------------------------------------------------------------
@@ -191,7 +191,7 @@ return [
          */
         'enabled' => true,
         
-        /**
+        /*
          *--------------------------------------------------------------------------
          * Raw Property
          *--------------------------------------------------------------------------
@@ -203,7 +203,7 @@ return [
          */
         'raw_property' => 'raw_data',
         
-        /**
+        /*
          *--------------------------------------------------------------------------
          * Use YouTube ID as Primary Key
          *--------------------------------------------------------------------------
@@ -216,7 +216,7 @@ return [
          */
         'youtube_id_as_primary_key' => false,
         
-        /**
+        /*
          *--------------------------------------------------------------------------
          * Automatic Update
          *--------------------------------------------------------------------------
