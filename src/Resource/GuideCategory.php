@@ -1,19 +1,14 @@
 <?php namespace CupOfTea\YouTube\Resource;
 
-use CupOfTea\YouTube\Contracts\Provider;
 use CupOfTea\YouTube\Abstraction\Resource;
-use CupOfTea\YouTube\Exceptions\UnauthorisedException;
-
 use CupOfTea\YouTube\Traits\ListMethod;
 
-class GuideCategory extends Resource {
-    
+class GuideCategory extends Resource
+{
     use ListMethod;
     
     /**
-	 * {@inheritdoc}
-	 */
+     * {@inheritdoc}
+     */
     protected $urlSegment = 'guideCategories';
-    
-    
 }

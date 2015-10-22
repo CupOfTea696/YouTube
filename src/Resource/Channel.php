@@ -1,30 +1,29 @@
 <?php namespace CupOfTea\YouTube\Resource;
 
-use CupOfTea\YouTube\Contracts\Provider;
 use CupOfTea\YouTube\Abstraction\Resource;
 use CupOfTea\YouTube\Traits\HasSubResources;
-use CupOfTea\YouTube\Exceptions\UnauthorisedException;
+use CupOfTea\YouTube\Traits\ListMethod;
+use CupOfTea\YouTube\Traits\UpdateMethod;
 
-use CupOfTea\YouTube\Traits\ListMethod, CupOfTea\YouTube\Traits\UpdateMethod;
-
-class Channel extends Resource{
-    
+class Channel extends Resource
+{
     use ListMethod, UpdateMethod,
         HasSubResources;
     
     /**
-	 * Available SubResources for this API.
-	 *
-	 * @var array
-	 */
-	protected $available_subresources = ['banner', 'section'];
+     * Available SubResources for this API.
+     *
+     * @var array
+     */
+    protected $available_subresources = ['banner', 'section'];
     
     /**
-	 * {@inheritdoc}
-	 */
+     * {@inheritdoc}
+     */
     protected $urlSegment = 'channels';
     
-    public function me($parameters = []){
+    public function me($parameters = [])
+    {
         $this->authenticated();
         $this->parameters = array_replace($this->parameters, $parameters);
         $this->part(['id', 'snippet']);
@@ -32,5 +31,4 @@ class Channel extends Resource{
         
         return $this->list($this->parameters);
     }
-    
 }

@@ -3,15 +3,16 @@
 use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model;
 
-class RefreshToken extends Model{
-    
+class RefreshToken extends Model
+{
     protected $table;
     protected $fillable;
     protected $userKey;
     
     public $timestamps = false;
     
-    public function __construct(array $attributes = []){
+    public function __construct(array $attributes = [])
+    {
         $model = '\\' . Config::get('auth.model');
         
         $this->userKey = (new $model)->getKeyName();
@@ -21,7 +22,8 @@ class RefreshToken extends Model{
         parent::__construct($attributes);
     }
     
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(('\\' . Config::get('auth.model')), $this->userKey, 'user_id');
     }
 }

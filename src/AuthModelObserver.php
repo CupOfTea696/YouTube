@@ -4,7 +4,6 @@ use Session;
 
 class AuthModelObserver
 {
-    
     protected $rawData;
     
     protected $isNew;
@@ -26,5 +25,4 @@ class AuthModelObserver
         $model->isNew = Session::pull(YouTube::package('dot') . '.auth_model.meta.is_new');
         $model->{config('youtube.integration.raw_property')} = Session::pull(YouTube::package('dot') . '.auth_model.meta.raw');
     }
-
 }
