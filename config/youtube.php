@@ -138,7 +138,7 @@ return [
      * If Use YouTube ID as Primary Key is Enabled below, you don't need to map the youtube.id value
      * @TODO: The property youtube.snippet.thumbnails will automatically fall back a to smaller size if the size requested isn't present.
      * Please note that all properties are prefixed by their respective API source.
-     * 
+     *
      * @default [
      *     'youtubeId' => 'youtube.id',
      *     'username' => 'youtube.snippet.title',
